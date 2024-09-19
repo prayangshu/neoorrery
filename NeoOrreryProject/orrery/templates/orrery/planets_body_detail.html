@@ -1,0 +1,69 @@
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+    <h2>{{ body.name }} - Planet</h2>
+
+    {% if body.description %}
+        <p><strong>Description:</strong> {{ body.description }}</p>
+    {% else %}
+        <p><strong>Description:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.size %}
+        <p><strong>Size:</strong> {{ body.size|floatformat:2 }} meters</p>
+    {% else %}
+        <p><strong>Size:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.distance %}
+        <p><strong>Distance from Earth:</strong> {{ body.distance|floatformat:2 }} km</p>
+    {% else %}
+        <p><strong>Distance from Earth:</strong> Not available</p>
+    {% endif %}
+
+    <h3>Keplerian Parameters</h3>
+
+    {% if body.semi_major_axis %}
+        <p><strong>Semi-Major Axis:</strong> {{ body.semi_major_axis|floatformat:3 }} AU</p>
+    {% else %}
+        <p><strong>Semi-Major Axis:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.eccentricity %}
+        <p><strong>Eccentricity:</strong> {{ body.eccentricity|floatformat:5 }}</p>
+    {% else %}
+        <p><strong>Eccentricity:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.inclination %}
+        <p><strong>Inclination:</strong> {{ body.inclination|floatformat:2 }} degrees</p>
+    {% else %}
+        <p><strong>Inclination:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.argument_of_periapsis %}
+        <p><strong>Argument of Periapsis:</strong> {{ body.argument_of_periapsis|floatformat:2 }} degrees</p>
+    {% else %}
+        <p><strong>Argument of Periapsis:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.longitude_of_ascending_node %}
+        <p><strong>Longitude of Ascending Node:</strong> {{ body.longitude_of_ascending_node|floatformat:2 }} degrees</p>
+    {% else %}
+        <p><strong>Longitude of Ascending Node:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.mean_anomaly %}
+        <p><strong>Mean Anomaly:</strong> {{ body.mean_anomaly|floatformat:2 }} degrees</p>
+    {% else %}
+        <p><strong>Mean Anomaly:</strong> Not available</p>
+    {% endif %}
+
+    <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+
+    {% if body.image_url %}
+        <img src="{{ body.image_url }}" alt="{{ body.name }} image" style="max-width: 100%; height: auto; margin-top: 20px;">
+    {% else %}
+        <p><strong>Image:</strong> Not available</p>
+    {% endif %}
+{% endblock %}

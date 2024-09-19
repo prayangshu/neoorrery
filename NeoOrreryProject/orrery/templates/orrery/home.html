@@ -1,0 +1,40 @@
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+    <div style="text-align: center; padding: 50px 0;">
+        <h2 style="animation: fadeInUp 1s ease-out;">Welcome to NeoOrrery</h2>
+        <p style="animation: fadeInUp 1.2s ease-out;">
+            Explore the wonders of our solar system and beyond with NeoOrrery. Track Near-Earth Objects, visualize their orbits, and learn more about the celestial bodies that surround us.
+        </p>
+
+        <h2 style="animation: fadeInUp 1.5s ease-out;">Explore the 3D World of Asteroids, Comets, and NEOs</h2>
+        <p style="animation: fadeInUp 1.6s ease-out;">
+            Learn about past and future missions, tracking and predicting orbits, and close approaches to Earth.
+        </p>
+
+        <!-- NASA Eyes on Asteroids Embed -->
+        <iframe src="https://eyes.nasa.gov/apps/asteroids/#/home"
+                loading="lazy"
+                style="width: 100%; height: 600px; border: none; animation: fadeIn 2s ease-out;">
+        </iframe>
+    </div>
+{% endblock %}
+
+<style>
+    /* Optimized Animation for content fade-in */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* General optimization for animations */
+    h2, p {
+        will-change: transform, opacity;
+    }
+</style>

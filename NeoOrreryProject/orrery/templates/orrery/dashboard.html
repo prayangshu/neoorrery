@@ -1,0 +1,61 @@
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+<h2 style="margin-top: 2rem;">Celestial Body Dashboard</h2>
+
+<form method="GET" action="{% url 'dashboard' %}" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    <input type="text" name="search" placeholder="Search by name or type..." value="{{ search_query }}" style="padding: 10px; border-radius: 5px; border: 1px solid #03dac5; flex-grow: 1;">
+
+    <select name="filter_by" style="padding: 10px; border-radius: 5px; border: 1px solid #03dac5; min-width: 150px;">
+        <option value="">Filter By Type</option>
+        <option value="Planet" {% if filter_by == "Planet" %}selected{% endif %}>Planet</option>
+        <option value="Comet" {% if filter_by == "Comet" %}selected{% endif %}>Comet</option>
+        <option value="Asteroid" {% if filter_by == "Asteroid" %}selected{% endif %}>Asteroid</option>
+        <option value="PHA" {% if filter_by == "PHA" %}selected{% endif %}>PHA</option>
+    </select>
+
+    <select name="sort_by" style="padding: 10px; border-radius: 5px; border: 1px solid #03dac5; min-width: 150px;">
+        <option value="">Sort By</option>
+        <option value="name" {% if sort_by == "name" %}selected{% endif %}>Name</option>
+        <option value="distance_from_earth" {% if sort_by == "distance_from_earth" %}selected{% endif %}>Distance from Earth</option>
+    </select>
+
+    <button type="submit" class="btn-glow" style="padding: 10px 20px; border-radius: 5px;">Search</button>
+    <a href="{% url 'export_bodies_csv' %}" class="btn-glow" style="padding: 10px 20px; border-radius: 5px;">Export to CSV</a>
+</form>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #1f1f1f; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <thead>
+        <tr style="background-color: #03dac5; color: #121212;">
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Name</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Body Type</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Size (meters)</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Distance from Earth (km)</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Semi-Major Axis (AU)</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Eccentricity</th>
+            <th style="padding: 10px; text-align: left; border-bottom: 2px solid #0288d1;">Last Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for body in celestial_bodies %}
+        <tr style="border-bottom: 1px solid #0288d1;">
+            <td style="padding: 10px;">
+                <a href="{% url 'body_detail' body.pk body.get_body_type %}" style="color: #03a9f4; text-decoration: none; transition: color 0.3s ease-in-out;">
+                    {{ body.name }}
+                </a>
+            </td>
+            <td style="padding: 10px;">{{ body.get_body_type }}</td>
+            <td style="padding: 10px;">{{ body.size|default_if_none:"N/A" }}</td>
+            <td style="padding: 10px;">{{ body.distance|default_if_none:"N/A" }}</td>
+            <td style="padding: 10px;">{{ body.semi_major_axis|default_if_none:"N/A" }}</td>
+            <td style="padding: 10px;">{{ body.eccentricity|default_if_none:"N/A" }}</td>
+            <td style="padding: 10px;">{{ body.last_updated|date:"Y-m-d" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if not celestial_bodies %}
+    <p style="text-align: center; margin-top: 20px;">No celestial bodies found matching your criteria.</p>
+{% endif %}
+{% endblock %}

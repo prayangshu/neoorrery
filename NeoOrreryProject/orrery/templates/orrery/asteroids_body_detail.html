@@ -1,0 +1,34 @@
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+    <h2>{{ body.name }} - Asteroid</h2>
+
+    {% if body.description %}
+        <p><strong>Description:</strong> {{ body.description }}</p>
+    {% else %}
+        <p><strong>Description:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.size %}
+        <p><strong>Size:</strong> {{ body.size|floatformat:2 }} meters</p>
+    {% else %}
+        <p><strong>Size:</strong> Not available</p>
+    {% endif %}
+
+    {% if body.distance %}
+        <p><strong>Distance from Earth:</strong> {{ body.distance|floatformat:2 }} km</p>
+    {% else %}
+        <p><strong>Distance from Earth:</strong> Not available</p>
+    {% endif %}
+
+    <h3>Asteroid Information</h3>
+    <p><strong>Is Potentially Hazardous:</strong> No</p>
+
+    <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+
+    {% if body.image_url %}
+        <img src="{{ body.image_url }}" alt="{{ body.name }} image" style="max-width: 100%; height: auto; margin-top: 20px;">
+    {% else %}
+        <p><strong>Image:</strong> Not available</p>
+    {% endif %}
+{% endblock %}

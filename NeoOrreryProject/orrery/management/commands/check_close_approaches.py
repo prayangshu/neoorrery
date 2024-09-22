@@ -1,19 +1,18 @@
-
 from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
-from orrery.models import CelestialBody
+from orrery.models import Planet, Comet, Asteroid
 
 class Command(BaseCommand):
     help = 'Checks for close approaches of celestial bodies and sends alerts'
 
     def handle(self, *args, **kwargs):
-        # Define a threshold for a "close approach" (e.g., 100,000 km)
-        threshold_distance = 100000  # 100,000 kilometers
+        threshold_distance = 100000
+        close_approaches_planets = Planet.objects.filter(distance__lt=threshold_distance)
+        close_approaches_comets = Comet.objects.filter(distance__lt=threshold_distance)
+        close_approaches_asteroids = Asteroid.objects.filter(distance__lt=threshold_distance)
+        close_approaches = list(close_approaches_planets) + list(close_approaches_comets) + list(close_approaches_asteroids)
 
-        # Get celestial bodies that are within this distance from Earth
-        close_approaches = CelestialBody.objects.filter(distance__lt=threshold_distance)
-
-        if close_approaches.exists():
+        if close_approaches:
             subject = "Alert: Close Approach of Celestial Bodies"
             message = "The following celestial bodies are approaching Earth within a close range:\n\n"
             for body in close_approaches:
@@ -23,8 +22,8 @@ class Command(BaseCommand):
                 send_mail(
                     subject,
                     message,
-                    'mail@prayangshu.com',  # Sender email
-                    ['prayangshu634479@gmail.com'],  # Recipient email
+                    'mail@prayangshu.com',
+                    ['prayangshu634479@gmail.com'],
                     fail_silently=False,
                 )
                 self.stdout.write(self.style.SUCCESS('Close approach alerts sent successfully!'))

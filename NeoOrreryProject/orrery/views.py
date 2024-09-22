@@ -9,19 +9,38 @@ def home(request):
 
 
 def dashboard(request):
-    planets = Planet.objects.all()
-    comets = Comet.objects.all()
-    asteroids = Asteroid.objects.all()
+    # Fetch counts for celestial bodies
+    total_planets = Planet.objects.count()
+    total_comets = Comet.objects.count()
+    total_asteroids = Asteroid.objects.count()
+    total_pha = Asteroid.objects.filter(is_potentially_hazardous=True).count()
+
+    # Total celestial bodies = sum of all categories
+    total_celestial_bodies = total_planets + total_comets + total_asteroids
+
+    # Percentage change (dummy values for now, implement real logic)
+    planet_change = 2  # Example: 2% increase since last fetch
+    comet_change = -1  # Example: 1% decrease
+    asteroid_change = 3
+    pha_change = 1
+    total_celestial_bodies_change = 5
 
     celestial_bodies = []
 
+    # Search and filter logic
     search_query = request.GET.get('search', '')
-    if search_query:
-        planets = planets.filter(name__icontains=search_query)
-        comets = comets.filter(name__icontains=search_query)
-        asteroids = asteroids.filter(name__icontains=search_query)
-
     filter_by = request.GET.get('filter_by', '')
+    sort_by = request.GET.get('sort_by', '')
+
+    if search_query:
+        planets = Planet.objects.filter(name__icontains=search_query)
+        comets = Comet.objects.filter(name__icontains=search_query)
+        asteroids = Asteroid.objects.filter(name__icontains=search_query)
+    else:
+        planets = Planet.objects.all()
+        comets = Comet.objects.all()
+        asteroids = Asteroid.objects.all()
+
     if filter_by == 'Planet':
         celestial_bodies = list(planets)
     elif filter_by == 'Comet':
@@ -33,7 +52,6 @@ def dashboard(request):
     else:
         celestial_bodies = list(planets) + list(comets) + list(asteroids)
 
-    sort_by = request.GET.get('sort_by', '')
     if sort_by == 'name':
         celestial_bodies = sorted(celestial_bodies, key=lambda x: x.name)
     elif sort_by == 'distance_from_earth':
@@ -41,6 +59,16 @@ def dashboard(request):
 
     context = {
         'celestial_bodies': celestial_bodies,
+        'total_celestial_bodies': total_celestial_bodies,
+        'total_planets': total_planets,
+        'total_comets': total_comets,
+        'total_asteroids': total_asteroids,
+        'total_pha': total_pha,
+        'total_celestial_bodies_change': total_celestial_bodies_change,
+        'planets_change': planet_change,
+        'comets_change': comet_change,
+        'asteroids_change': asteroid_change,
+        'pha_change': pha_change,
         'search_query': search_query,
         'filter_by': filter_by,
         'sort_by': sort_by,
@@ -69,21 +97,21 @@ def export_bodies_csv(request):
     response['Content-Disposition'] = 'attachment; filename="celestial_bodies.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Name', 'Body Type', 'Size (meters)', 'Distance (km)', 'Last Updated', 'Image URL'])
+    writer.writerow(['Name', 'Body Type', 'Size (meters)', 'Distance (km)', 'Last Updated'])
 
     planets = Planet.objects.all()
     comets = Comet.objects.all()
     asteroids = Asteroid.objects.all()
 
     for body in planets:
-        writer.writerow([body.name, 'Planet', body.size, body.distance, body.last_updated, body.image_url])
+        writer.writerow([body.name, 'Planet', body.size, body.distance, body.last_updated])
 
     for body in comets:
-        writer.writerow([body.name, 'Comet', body.size, body.distance, body.last_updated, body.image_url])
+        writer.writerow([body.name, 'Comet', body.size, body.distance, body.last_updated])
 
     for body in asteroids:
         body_type = 'PHA' if body.is_potentially_hazardous else 'Asteroid'
-        writer.writerow([body.name, body_type, body.size, body.distance, body.last_updated, body.image_url])
+        writer.writerow([body.name, body_type, body.size, body.distance, body.last_updated])
 
     return response
 

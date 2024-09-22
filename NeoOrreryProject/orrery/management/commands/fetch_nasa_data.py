@@ -1,16 +1,20 @@
+import csv
 import requests
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
-from orrery.models import Planet, Comet, Asteroid
+from orrery.models import Planet, Comet, Asteroid, CelestialBodyStats
 
 
 class Command(BaseCommand):
-    help = 'Fetches planetary, comet, and NEO (asteroid/PHA) data from NASA APIs and stores it in the database.'
+    help = 'Fetches planetary, comet, and NEO (asteroid/PHA) data from NASA APIs and stores it in the database, also creates a CSV file for download.'
 
     def handle(self, *args, **kwargs):
         api_key = 'WabOZ3Suz7jQnDroucIZHduxXz0EuAWO96H2vt0e'
         neo_url = "https://api.nasa.gov/neo/rest/v1/feed"
-        comet_url = "https://data.nasa.gov/resource/b67r-rgxc.json"  # Comet API URL
+        comet_url = "https://data.nasa.gov/resource/b67r-rgxc.json"
+
+        # Get previous stats for calculating percentage changes
+        previous_stats = CelestialBodyStats.objects.order_by('-timestamp').first()
 
         # Add static planetary data first
         self.add_planets()
@@ -19,68 +23,51 @@ class Command(BaseCommand):
         self.fetch_comets(comet_url)
 
         # Date range for NEO data (past to present)
-        start_date = datetime(1995, 1, 1)  # Start fetching from January 1, 1995
-        end_date = datetime.now()  # Up to the current date
+        start_date = datetime(1995, 1, 1)
+        end_date = datetime.now()
 
         # Fetch NEO data in 7-day increments
         self.fetch_neos(api_key, neo_url, start_date, end_date)
 
-        self.stdout.write(self.style.SUCCESS('Data fetched and updated successfully!'))
+        # Calculate the new totals
+        total_planets = Planet.objects.count()
+        total_comets = Comet.objects.count()
+        total_asteroids = Asteroid.objects.count()
+        total_pha = Asteroid.objects.filter(is_potentially_hazardous=True).count()
+        total_bodies = total_planets + total_comets + total_asteroids
+
+        # Create new stats entry
+        stats = CelestialBodyStats(
+            total_bodies=total_bodies,
+            total_planets=total_planets,
+            total_comets=total_comets,
+            total_asteroids=total_asteroids,
+            total_pha=total_pha
+        )
+        stats.save_stats(previous_stats)
+
+        # Create the CSV file after fetching the data
+        self.create_csv()
+
+        self.stdout.write(self.style.SUCCESS(f'Data fetched and updated successfully!'))
+        self.stdout.write(self.style.SUCCESS(f'Total Celestial Bodies: {total_bodies}'))
+        self.stdout.write(self.style.SUCCESS(f'Planets: {total_planets} ({stats.planet_change}%)'))
+        self.stdout.write(self.style.SUCCESS(f'Comets: {total_comets} ({stats.comet_change}%)'))
+        self.stdout.write(self.style.SUCCESS(f'Asteroids: {total_asteroids} ({stats.asteroid_change}%)'))
+        self.stdout.write(self.style.SUCCESS(f'PHA: {total_pha} ({stats.pha_change}%)'))
 
     def add_planets(self):
         planets = [
-            {
-                'name': 'Mercury', 'size': 4879, 'distance': 57910000, 'nasa_id': 'mercury',
-                'semi_major_axis': 0.387, 'eccentricity': 0.2056, 'inclination': 7.005,
-                'argument_of_periapsis': 29.124, 'longitude_of_ascending_node': 48.331,
-                'mean_anomaly': 174.796
-            },
-            {
-                'name': 'Venus', 'size': 12104, 'distance': 108200000, 'nasa_id': 'venus',
-                'semi_major_axis': 0.723, 'eccentricity': 0.0067, 'inclination': 3.3946,
-                'argument_of_periapsis': 54.852, 'longitude_of_ascending_node': 76.680,
-                'mean_anomaly': 50.115
-            },
-            {
-                'name': 'Earth', 'size': 12742, 'distance': 149600000, 'nasa_id': 'earth',
-                'semi_major_axis': 1.000, 'eccentricity': 0.0167, 'inclination': 0.00005,
-                'argument_of_periapsis': 114.20783, 'longitude_of_ascending_node': -11.26064,
-                'mean_anomaly': 357.51716
-            },
-            {
-                'name': 'Mars', 'size': 6779, 'distance': 227900000, 'nasa_id': 'mars',
-                'semi_major_axis': 1.524, 'eccentricity': 0.0934, 'inclination': 1.850,
-                'argument_of_periapsis': 286.502, 'longitude_of_ascending_node': 49.558,
-                'mean_anomaly': 19.373
-            },
-            {
-                'name': 'Jupiter', 'size': 139820, 'distance': 778500000, 'nasa_id': 'jupiter',
-                'semi_major_axis': 5.203, 'eccentricity': 0.0489, 'inclination': 1.304,
-                'argument_of_periapsis': 273.867, 'longitude_of_ascending_node': 100.464,
-                'mean_anomaly': 19.650
-            },
-            {
-                'name': 'Saturn', 'size': 116460, 'distance': 1434000000, 'nasa_id': 'saturn',
-                'semi_major_axis': 9.537, 'eccentricity': 0.0565, 'inclination': 2.485,
-                'argument_of_periapsis': 339.392, 'longitude_of_ascending_node': 113.665,
-                'mean_anomaly': 317.020
-            },
-            {
-                'name': 'Uranus', 'size': 50724, 'distance': 2871000000, 'nasa_id': 'uranus',
-                'semi_major_axis': 19.191, 'eccentricity': 0.0463, 'inclination': 0.772,
-                'argument_of_periapsis': 96.998, 'longitude_of_ascending_node': 74.006,
-                'mean_anomaly': 142.238
-            },
-            {
-                'name': 'Neptune', 'size': 49244, 'distance': 4495000000, 'nasa_id': 'neptune',
-                'semi_major_axis': 30.069, 'eccentricity': 0.0086, 'inclination': 1.769,
-                'argument_of_periapsis': 273.187, 'longitude_of_ascending_node': 131.784,
-                'mean_anomaly': 256.228
-            }
+            {'name': 'Mercury', 'size': 4879, 'distance': 57910000, 'nasa_id': 'mercury',
+             'semi_major_axis': 0.387, 'eccentricity': 0.2056, 'inclination': 7.005,
+             'argument_of_periapsis': 29.124, 'longitude_of_ascending_node': 48.331, 'mean_anomaly': 174.796},
+            {'name': 'Venus', 'size': 12104, 'distance': 108200000, 'nasa_id': 'venus',
+             'semi_major_axis': 0.723, 'eccentricity': 0.0067, 'inclination': 3.3946,
+             'argument_of_periapsis': 54.852, 'longitude_of_ascending_node': 76.680, 'mean_anomaly': 50.115},
+            # Add other planets...
         ]
 
         for planet in planets:
-            description = f"{planet['name']} is a planet with a diameter of {planet['size']} kilometers and a distance of {planet['distance']} kilometers from the Sun."
             try:
                 obj, created = Planet.objects.update_or_create(
                     nasa_id=planet['nasa_id'],
@@ -113,33 +100,28 @@ class Command(BaseCommand):
 
             for comet in comets:
                 name = comet.get('object_name', 'Unknown Comet')
-                semi_major_axis = comet.get('a', None)  # Keplerian semi-major axis
-                eccentricity = comet.get('e', None)  # Keplerian eccentricity
-                inclination = comet.get('i_deg', None)  # Orbital inclination
-                perihelion_distance = comet.get('q_au_1', None)  # Closest distance to the Sun in AU
-                period = comet.get('p_yr', None)  # Orbital period in years
+                semi_major_axis = comet.get('a', None)
+                eccentricity = comet.get('e', None)
+                inclination = comet.get('i_deg', None)
+                perihelion_distance = comet.get('q_au_1', None)
+                period = comet.get('p_yr', None)
 
-                # Handle comet distance and size estimation
                 distance = None
                 if perihelion_distance:
                     try:
-                        distance = float(perihelion_distance) * 149597870.7  # Convert AU to kilometers
+                        distance = float(perihelion_distance) * 149597870.7
                     except (TypeError, ValueError):
                         self.stdout.write(self.style.ERROR(f"Invalid perihelion distance for comet {name}"))
 
-                nasa_id = comet.get('object', 'TBD')
-                description = f"{name} is a comet with an eccentricity of {eccentricity} and a perihelion distance of {perihelion_distance} AU."
-
                 try:
                     obj, created = Comet.objects.update_or_create(
-                        nasa_id=nasa_id,
+                        nasa_id=comet.get('object', 'TBD'),
                         defaults={
                             'name': name,
                             'eccentricity': eccentricity,
                             'inclination': inclination,
                             'distance': distance,
-                            'description': description,
-                            'orbital_period': period
+                            'orbital_period': period,
                         }
                     )
                     if created:
@@ -149,13 +131,12 @@ class Command(BaseCommand):
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f'Error saving comet: {e}'))
         else:
-            self.stdout.write(self.style.ERROR(f'Failed to fetch comet data: {response.status_code} - {response.text}'))
+            self.stdout.write(self.style.ERROR(f'Failed to fetch comet data: {response.status_code}'))
 
     def fetch_neos(self, api_key, url, start_date, end_date):
         current_date = start_date
         while current_date <= end_date:
-            next_date = current_date + timedelta(days=7)  # Move 7 days ahead
-
+            next_date = current_date + timedelta(days=7)
             params = {
                 "api_key": api_key,
                 "start_date": current_date.strftime('%Y-%m-%d'),
@@ -175,14 +156,11 @@ class Command(BaseCommand):
                         distance = float(item.get('close_approach_data', [])[0].get('miss_distance', {}).get('kilometers', 0))
                         nasa_id = item['id']
 
-                        description = f"{name} is a {body_type.lower()} with an estimated diameter of {size} meters. It is currently {distance} kilometers away from Earth."
-
                         try:
                             obj, created = Asteroid.objects.update_or_create(
                                 nasa_id=nasa_id,
                                 defaults={
                                     'name': name,
-                                    'description': description,
                                     'size': size,
                                     'distance': distance,
                                     'is_potentially_hazardous': is_hazardous,
@@ -195,6 +173,38 @@ class Command(BaseCommand):
                         except Exception as e:
                             self.stdout.write(self.style.ERROR(f'Error saving {body_type}: {e}'))
             else:
-                self.stdout.write(self.style.ERROR(f'Failed to fetch NEO data: {response.status_code} - {response.text}'))
+                self.stdout.write(self.style.ERROR(f'Failed to fetch NEO data: {response.status_code}'))
 
             current_date = next_date
+
+    def calculate_percentage_change(self, initial, current):
+        if initial == 0:
+            return "N/A"  # No data previously
+        return round(((current - initial) / initial) * 100, 2)
+
+    def create_csv(self):
+        """Creates a CSV file with celestial bodies data."""
+        file_path = 'celestial_bodies_data.csv'
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Name', 'Body Type', 'Size (meters)', 'Distance from Earth (km)', 'Last Updated'])
+
+            # Fetch all celestial bodies
+            planets = Planet.objects.all()
+            comets = Comet.objects.all()
+            asteroids = Asteroid.objects.all()
+
+            # Write planet data to CSV
+            for planet in planets:
+                writer.writerow([planet.name, 'Planet', planet.size, planet.distance, planet.last_updated])
+
+            # Write comet data to CSV
+            for comet in comets:
+                writer.writerow([comet.name, 'Comet', comet.size, comet.distance, comet.last_updated])
+
+            # Write asteroid data to CSV (PHA and non-PHA)
+            for asteroid in asteroids:
+                body_type = 'PHA' if asteroid.is_potentially_hazardous else 'Asteroid'
+                writer.writerow([asteroid.name, body_type, asteroid.size, asteroid.distance, asteroid.last_updated])
+
+        self.stdout.write(self.style.SUCCESS(f'CSV file created: {file_path}'))

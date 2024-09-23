@@ -102,6 +102,9 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'mail@prayangshu.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'PrayangshUUU73@XD')
 
+# Set default from email for sending
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # Default auto field for primary keys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -114,3 +117,7 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for one year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True

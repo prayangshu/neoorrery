@@ -1,0 +1,13 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Profile - NeoOrrery{% endblock %}
+
+{% block content %}
+    <div class="profile-page">
+        <h2>My Profile</h2>
+        <img src="{{ user.profile_picture.url }}" alt="Profile Picture">
+        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+    </div>
+{% endblock %}

@@ -1,63 +1,17 @@
 {% extends 'orrery/base.html' %}
 
+{% block title %}Comet Detail - {{ body.name }}{% endblock %}
+
 {% block content %}
-    <h2>{{ body.name }} - Comet</h2>
-
-    {% if body.description %}
-        <p><strong>Description:</strong> {{ body.description }}</p>
-    {% else %}
-        <p><strong>Description:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.size %}
-        <p><strong>Size:</strong> {{ body.size|floatformat:2 }} meters</p>
-    {% else %}
-        <p><strong>Size:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.distance %}
-        <p><strong>Distance from Earth:</strong> {{ body.distance|floatformat:2 }} km</p>
-    {% else %}
-        <p><strong>Distance from Earth:</strong> Not available</p>
-    {% endif %}
-
-    <h3>Orbital Parameters</h3>
-
-    {% if body.orbital_period %}
-        <p><strong>Orbital Period:</strong> {{ body.orbital_period|floatformat:2 }} years</p>
-    {% else %}
-        <p><strong>Orbital Period:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.eccentricity %}
-        <p><strong>Eccentricity:</strong> {{ body.eccentricity|floatformat:5 }}</p>
-    {% else %}
-        <p><strong>Eccentricity:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.inclination %}
-        <p><strong>Inclination:</strong> {{ body.inclination|floatformat:2 }} degrees</p>
-    {% else %}
-        <p><strong>Inclination:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.argument_of_periapsis %}
-        <p><strong>Argument of Periapsis:</strong> {{ body.argument_of_periapsis|floatformat:2 }} degrees</p>
-    {% else %}
-        <p><strong>Argument of Periapsis:</strong> Not available</p>
-    {% endif %}
-
-    {% if body.longitude_of_ascending_node %}
-        <p><strong>Longitude of Ascending Node:</strong> {{ body.longitude_of_ascending_node|floatformat:2 }} degrees</p>
-    {% else %}
-        <p><strong>Longitude of Ascending Node:</strong> Not available</p>
-    {% endif %}
-
-    <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
-
-    {% if body.image_url %}
-        <img src="{{ body.image_url }}" alt="{{ body.name }} image" style="max-width: 100%; height: auto; margin-top: 20px;">
-    {% else %}
-        <p><strong>Image:</strong> Not available</p>
-    {% endif %}
+    <div class="detail-container">
+        <h2>Comet: {{ body.name }}</h2>
+        <p><strong>Orbital Period:</strong> {{ body.orbital_period }} years</p>
+        <p><strong>Size:</strong> {{ body.size|default:"N/A" }} meters</p>
+        <p><strong>Distance from Earth:</strong> {{ body.distance|default:"N/A" }} km</p>
+        <p><strong>Eccentricity:</strong> {{ body.eccentricity|default:"N/A" }}</p>
+        <p><strong>Inclination:</strong> {{ body.inclination|default:"N/A" }} degrees</p>
+        <p><strong>Argument of Periapsis:</strong> {{ body.argument_of_periapsis|default:"N/A" }} degrees</p>
+        <p><strong>Longitude of Ascending Node:</strong> {{ body.longitude_of_ascending_node|default:"N/A" }} degrees</p>
+        <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+    </div>
 {% endblock %}

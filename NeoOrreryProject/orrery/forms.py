@@ -1,5 +1,6 @@
 from django import forms
-from .models import Planet, Comet, Asteroid
+from .models import Planet, Comet, Asteroid, UserProfile
+from django.contrib.auth.models import User
 
 class PlanetForm(forms.ModelForm):
     class Meta:
@@ -27,6 +28,7 @@ class PlanetForm(forms.ModelForm):
             'mean_anomaly': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
         }
 
+
 class CometForm(forms.ModelForm):
     class Meta:
         model = Comet
@@ -49,6 +51,7 @@ class CometForm(forms.ModelForm):
             'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
         }
 
+
 class AsteroidForm(forms.ModelForm):
     class Meta:
         model = Asteroid
@@ -64,3 +67,13 @@ class AsteroidForm(forms.ModelForm):
             'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' km'}),
             'is_potentially_hazardous': forms.CheckboxInput(attrs={'disabled': 'disabled'}),
         }
+
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']  # Include only the fields you want users to edit
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture']

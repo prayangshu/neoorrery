@@ -3,217 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NeoOrrery - Visualizing celestial bodies in a 3D environment">
-    <meta name="keywords" content="NeoOrrery, NASA, Celestial Bodies, Planets, Asteroids, 3D Visualization">
-    <meta name="author" content="Team Radiant">
-    <title>NeoOrrery</title>
-    <!-- Preconnect for faster Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        /* Base styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            scroll-behavior: smooth;
-        }
-
-        header {
-            background: linear-gradient(45deg, #6200ea, #03dac5);
-            color: #ffffff;
-            padding: 1.5rem 0;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            margin: 0;
-            text-transform: uppercase;
-            animation: fadeIn 2s ease-in-out;
-            color: #ffffff;
-        }
-
-        nav {
-            margin-top: 1rem;
-        }
-
-        nav a {
-            color: #ffffff;
-            margin: 0 1rem;
-            text-decoration: none;
-            font-size: 1.1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-            display: inline-block;
-        }
-
-        nav a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        main {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            animation: slideIn 1.5s ease-out;
-            background-color: #1f1f1f;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        footer {
-            background-color: #1f1f1f;
-            color: #ffffff;
-            text-align: center;
-            padding: 1rem 0;
-            width: 100%;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            border-top: 1px solid #6200ea;
-        }
-
-        footer p {
-            margin: 0;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        footer a {
-            color: #03dac5;
-            text-decoration: none;
-            transition: color 0.3s ease-in-out;
-        }
-
-        footer a:hover {
-            color: #6200ea;
-            text-decoration: underline;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #6200ea;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #03dac5;
-        }
-
-        /* Button styles */
-        .button {
-            background-color: #6200ea;
-            color: #ffffff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 5px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 0.5rem 0;
-            font-size: 1.1rem;
-            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button:hover {
-            background-color: #03dac5;
-            transform: scale(1.05);
-        }
-
-        .button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300%;
-            height: 300%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-        }
-
-        .button:hover::before {
-            width: 0;
-            height: 0;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        /* Media Queries for responsive design */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-
-            nav a {
-                font-size: 1rem;
-                margin: 0 0.5rem;
-            }
-
-            main {
-                padding: 1rem;
-            }
-
-            .button {
-                font-size: 1rem;
-            }
-        }
-    </style>
+    <title>{% block title %}NeoOrrery{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'orrery/styles.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_head %}
+    {% endblock %}
 </head>
 <body>
-    <header role="banner">
-        <h1>NeoOrrery</h1>
-        <nav role="navigation">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'three_d_view' %}">3D Orrery</a>
-        </nav>
-    </header>
-    <main role="main">
-        {% block content %}{% endblock %}
-    </main>
-    <footer role="contentinfo">
-        <p>&copy; 2024 NeoOrrery by <a href="#">Team Radiant</a></p>
-    </footer>
+    <div class="container">
+        <header>
+            <div class="header">
+                <div class="user">
+                    {% if user.is_authenticated %}
+                        <img src="{{ user.profile_picture.url }}" alt="User Profile Picture">
+                        <div>
+                            <h4>{{ user.first_name }}</h4>
+                            <p>Admin</p>
+                            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+        <footer>
+            <p>&copy; <span id="currentYear"></span> Team Radiant. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script src="{% static 'orrery/scripts.js' %}"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    {% block extra_js %}
+    {% endblock %}
 </body>
 </html>

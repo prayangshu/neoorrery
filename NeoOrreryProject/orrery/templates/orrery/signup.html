@@ -1,0 +1,14 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Sign Up - NeoOrrery{% endblock %}
+
+{% block content %}
+    <div class="auth-form">
+        <h2>Sign Up</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+    </div>
+{% endblock %}

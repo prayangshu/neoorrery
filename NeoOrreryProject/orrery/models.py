@@ -1,17 +1,27 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    is_opted_in = models.BooleanField(default=False)  # Tracks whether the user has opted into alerts
+
+    def __str__(self):
+        return f"{self.user.username}'s profile"
 
 
 class CelestialBody(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    size = models.FloatField(blank=True, null=True)
-    distance = models.FloatField(blank=True, null=True)
+    size = models.FloatField(blank=True, null=True)  # in kilometers/meters
+    distance = models.FloatField(blank=True, null=True)  # in kilometers
     nasa_id = models.CharField(max_length=100, unique=True, default="TBD")
     last_updated = models.DateTimeField(auto_now=True)
 
     class Meta:
-        abstract = True
+        abstract = True  # This is an abstract model, not a table
 
     def __str__(self):
         return f"{self.name}"
@@ -22,12 +32,12 @@ class CelestialBody(models.Model):
 
 
 class Planet(CelestialBody):
-    semi_major_axis = models.FloatField(blank=True, null=True)
+    semi_major_axis = models.FloatField(blank=True, null=True)  # in AU
     eccentricity = models.FloatField(blank=True, null=True)
-    inclination = models.FloatField(blank=True, null=True)
-    argument_of_periapsis = models.FloatField(blank=True, null=True)
-    longitude_of_ascending_node = models.FloatField(blank=True, null=True)
-    mean_anomaly = models.FloatField(blank=True, null=True)
+    inclination = models.FloatField(blank=True, null=True)  # in degrees
+    argument_of_periapsis = models.FloatField(blank=True, null=True)  # in degrees
+    longitude_of_ascending_node = models.FloatField(blank=True, null=True)  # in degrees
+    mean_anomaly = models.FloatField(blank=True, null=True)  # in degrees
 
     def __str__(self):
         return f"Planet: {self.name}"
@@ -35,20 +45,18 @@ class Planet(CelestialBody):
     def get_body_type(self):
         return "Planet"
 
-
 class Comet(CelestialBody):
-    orbital_period = models.FloatField(blank=True, null=True)
+    orbital_period = models.FloatField(blank=True, null=True)  # in years
     eccentricity = models.FloatField(blank=True, null=True)
-    inclination = models.FloatField(blank=True, null=True)
-    argument_of_periapsis = models.FloatField(blank=True, null=True)
-    longitude_of_ascending_node = models.FloatField(blank=True, null=True)
+    inclination = models.FloatField(blank=True, null=True)  # in degrees
+    argument_of_periapsis = models.FloatField(blank=True, null=True)  # in degrees
+    longitude_of_ascending_node = models.FloatField(blank=True, null=True)  # in degrees
 
     def __str__(self):
         return f"Comet: {self.name}"
 
     def get_body_type(self):
         return "Comet"
-
 
 class Asteroid(CelestialBody):
     is_potentially_hazardous = models.BooleanField(default=False)
@@ -65,7 +73,6 @@ class Asteroid(CelestialBody):
         else:
             return "Asteroid"
 
-
 class CelestialBodyStats(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     total_bodies = models.IntegerField(default=0)
@@ -79,7 +86,6 @@ class CelestialBodyStats(models.Model):
     pha_change = models.FloatField(blank=True, null=True)
 
     def save_stats(self, previous_stats=None):
-
         if previous_stats:
             self.planet_change = self.calculate_change(previous_stats.total_planets, self.total_planets)
             self.comet_change = self.calculate_change(previous_stats.total_comets, self.total_comets)
@@ -90,7 +96,7 @@ class CelestialBodyStats(models.Model):
     @staticmethod
     def calculate_change(old_value, new_value):
         if old_value == 0:
-            return None  # Return None if there was no previous data
+            return None
         return round(((new_value - old_value) / old_value) * 100, 2)
 
     def __str__(self):

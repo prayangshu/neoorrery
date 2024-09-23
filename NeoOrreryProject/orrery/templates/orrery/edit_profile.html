@@ -1,0 +1,14 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Edit Profile - NeoOrrery{% endblock %}
+
+{% block content %}
+    <div class="profile-page">
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+{% endblock %}

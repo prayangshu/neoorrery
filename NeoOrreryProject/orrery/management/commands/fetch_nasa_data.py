@@ -49,6 +49,7 @@ class Command(BaseCommand):
         # Create the CSV file after fetching the data
         self.create_csv()
 
+        # Display success message with fetched stats
         self.stdout.write(self.style.SUCCESS(f'Data fetched and updated successfully!'))
         self.stdout.write(self.style.SUCCESS(f'Total Celestial Bodies: {total_bodies}'))
         self.stdout.write(self.style.SUCCESS(f'Planets: {total_planets} ({stats.planet_change}%)'))
@@ -176,11 +177,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR(f'Failed to fetch NEO data: {response.status_code}'))
 
             current_date = next_date
-
-    def calculate_percentage_change(self, initial, current):
-        if initial == 0:
-            return "N/A"  # No data previously
-        return round(((current - initial) / initial) * 100, 2)
 
     def create_csv(self):
         """Creates a CSV file with celestial bodies data."""

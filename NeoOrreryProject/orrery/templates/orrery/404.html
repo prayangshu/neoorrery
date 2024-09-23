@@ -1,0 +1,12 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Page Not Found - 404{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <h1>404</h1>
+    <h3>Oops! The page you're looking for can't be found.</h3>
+    <p>It seems we can't find the page you were looking for. It might have been removed, or the link might be broken.</p>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

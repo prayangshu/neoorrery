@@ -1,0 +1,12 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Server Error - 500{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <h1>500</h1>
+    <h3>Oops! Something went wrong on our end.</h3>
+    <p>We are experiencing an internal server issue. Please try again later.</p>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

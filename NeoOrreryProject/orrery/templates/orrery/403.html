@@ -1,0 +1,12 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Access Forbidden - 403{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <h1>403</h1>
+    <h3>Access Forbidden</h3>
+    <p>You do not have the proper permissions to access this page.</p>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}

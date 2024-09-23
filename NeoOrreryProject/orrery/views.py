@@ -3,23 +3,26 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile
-from .forms import EditProfileForm  # Custom form for editing user profile
+from .forms import EditProfileForm
 
 
 @login_required
 def dashboard(request):
+    # Fetch counts for celestial bodies
     total_planets = Planet.objects.count()
     total_comets = Comet.objects.count()
     total_asteroids = Asteroid.objects.count()
     total_pha = Asteroid.objects.filter(is_potentially_hazardous=True).count()
 
+    # Total celestial bodies = sum of all categories
     total_celestial_bodies = total_planets + total_comets + total_asteroids
 
+    # Fetch the latest celestial body stats to calculate percentage changes
     latest_stats = CelestialBodyStats.objects.last()
 
     if latest_stats:
@@ -31,6 +34,7 @@ def dashboard(request):
     else:
         planet_change = comet_change = asteroid_change = pha_change = total_celestial_bodies_change = 0
 
+    # Create or update stats entry
     new_stats = CelestialBodyStats(
         total_bodies=total_celestial_bodies,
         total_planets=total_planets,
@@ -40,19 +44,20 @@ def dashboard(request):
     )
     new_stats.save_stats(latest_stats)
 
+    # Celestial bodies search, filter, and sort logic
     celestial_bodies = []
     search_query = request.GET.get('search', '')
     filter_by = request.GET.get('filter_by', '')
     sort_by = request.GET.get('sort_by', '')
 
+    planets = Planet.objects.all()
+    comets = Comet.objects.all()
+    asteroids = Asteroid.objects.all()
+
     if search_query:
-        planets = Planet.objects.filter(name__icontains=search_query)
-        comets = Comet.objects.filter(name__icontains=search_query)
-        asteroids = Asteroid.objects.filter(name__icontains=search_query)
-    else:
-        planets = Planet.objects.all()
-        comets = Comet.objects.all()
-        asteroids = Asteroid.objects.all()
+        planets = planets.filter(name__icontains=search_query)
+        comets = comets.filter(name__icontains=search_query)
+        asteroids = asteroids.filter(name__icontains=search_query)
 
     if filter_by == 'Planet':
         celestial_bodies = list(planets)
@@ -118,6 +123,7 @@ def edit_profile(request):
 
 
 def body_detail(request, pk, body_type):
+    """Displays detailed information about a celestial body."""
     if body_type == 'Planet':
         body = get_object_or_404(Planet, pk=pk)
         template = 'orrery/planets_body_detail.html'
@@ -149,6 +155,7 @@ def toggle_alert_subscription(request):
 
 
 def export_bodies_csv(request):
+    """Exports celestial bodies data to CSV."""
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="celestial_bodies.csv"'
 
@@ -173,10 +180,12 @@ def export_bodies_csv(request):
 
 
 def three_d_view(request):
+    """Render the 3D view of celestial bodies."""
     return render(request, 'orrery/3d_view.html')
 
 
 def fetch_orbital_data(request):
+    """Fetches and returns orbital data for celestial bodies."""
     planets = Planet.objects.all()
     comets = Comet.objects.all()
     asteroids = Asteroid.objects.all()
@@ -212,6 +221,7 @@ def fetch_orbital_data(request):
 
 
 def signup(request):
+    """Handles user signup."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -221,4 +231,5 @@ def signup(request):
             return redirect('dashboard')
     else:
         form = UserCreationForm()
+
     return render(request, 'orrery/signup.html', {'form': form})

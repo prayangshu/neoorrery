@@ -1,0 +1,11 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}Logout{% endblock %}
+
+{% block content %}
+    <div class="logout-message">
+        <h2>You have been logged out</h2>
+        <p>Thank you for visiting NeoOrrery!</p>
+        <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+    </div>
+{% endblock %}

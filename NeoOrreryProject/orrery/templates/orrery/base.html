@@ -12,23 +12,6 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="header">
-                <div class="user">
-                    {% if user.is_authenticated %}
-                        <img src="{{ user.profile_picture.url }}" alt="User Profile Picture">
-                        <div>
-                            <h4>{{ user.first_name }}</h4>
-                            <p>Admin</p>
-                            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-                    {% endif %}
-                </div>
-            </div>
-        </header>
-
         <main class="main-content">
             {% block content %}
             {% endblock %}

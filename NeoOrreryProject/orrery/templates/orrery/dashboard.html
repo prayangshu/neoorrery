@@ -3,6 +3,12 @@
 {% block title %}NEOORRY Dashboard{% endblock %}
 
 {% block content %}
+    <!-- Hidden fields to store data for JavaScript -->
+    <span id="totalPlanets" style="display:none;">{{ total_planets }}</span>
+    <span id="totalAsteroids" style="display:none;">{{ total_asteroids }}</span>
+    <span id="totalPHA" style="display:none;">{{ total_pha }}</span>
+    <span id="totalComets" style="display:none;">{{ total_comets }}</span>
+
     <!-- Greeting -->
     <div class="greeting">
         <h3>Good Morning, {{ user.first_name }}</h3>
@@ -18,6 +24,12 @@
                         Get Close Approaches Alert
                     {% endif %}
                 </button>
+            </form>
+
+            <!-- Logout Form -->
+            <form action="{% url 'logout' %}" method="POST" style="margin-top: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Logout</button>
             </form>
         {% endif %}
     </div>
@@ -81,7 +93,7 @@
 
     <!-- NASA Eyes on Asteroids Iframe Section -->
     <div class="iframe-container">
-        <iframe src="https://eyes.nasa.gov/apps/asteroids/#/home" title="NASA Eyes on Asteroids"></iframe>
+        <iframe src="https://eyes.nasa.gov/apps/asteroids/#/home" title="NASA Eyes on Asteroids" style="border: none;"></iframe>
     </div>
 
     <!-- Table Section -->

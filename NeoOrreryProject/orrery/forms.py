@@ -2,6 +2,7 @@ from django import forms
 from .models import Planet, Comet, Asteroid, UserProfile
 from django.contrib.auth.models import User
 
+
 class PlanetForm(forms.ModelForm):
     class Meta:
         model = Planet
@@ -18,14 +19,14 @@ class PlanetForm(forms.ModelForm):
             'mean_anomaly',
         ]
         widgets = {
-            'size': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' km'}),
-            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' km'}),
-            'semi_major_axis': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' AU'}),
-            'eccentricity': forms.NumberInput(attrs={'readonly': 'readonly'}),
-            'inclination': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
-            'argument_of_periapsis': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
-            'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
-            'mean_anomaly': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
+            'size': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Size in kilometers'}),
+            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Distance in kilometers'}),
+            'semi_major_axis': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'AU'}),
+            'eccentricity': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Eccentricity'}),
+            'inclination': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
+            'argument_of_periapsis': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
+            'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
+            'mean_anomaly': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
         }
 
 
@@ -43,12 +44,12 @@ class CometForm(forms.ModelForm):
             'longitude_of_ascending_node',
         ]
         widgets = {
-            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' km'}),
-            'orbital_period': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' years'}),
-            'eccentricity': forms.NumberInput(attrs={'readonly': 'readonly'}),
-            'inclination': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
-            'argument_of_periapsis': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
-            'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' degrees'}),
+            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Distance in kilometers'}),
+            'orbital_period': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Period in years'}),
+            'eccentricity': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Eccentricity'}),
+            'inclination': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
+            'argument_of_periapsis': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
+            'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
         }
 
 
@@ -63,17 +64,22 @@ class AsteroidForm(forms.ModelForm):
             'is_potentially_hazardous',
         ]
         widgets = {
-            'size': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' meters'}),
-            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'suffix': ' km'}),
+            'size': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Size in meters'}),
+            'distance': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Distance in kilometers'}),
             'is_potentially_hazardous': forms.CheckboxInput(attrs={'disabled': 'disabled'}),
         }
+
 
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']  # Include only the fields you want users to edit
+        fields = ['first_name', 'last_name', 'email']
+
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['profile_picture']
+        widgets = {
+            'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }

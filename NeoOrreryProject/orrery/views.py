@@ -8,11 +8,12 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.models import User
 from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile
-from .forms import EditProfileForm
+from .forms import EditProfileForm, UserProfileForm
 
 
 @login_required
 def dashboard(request):
+    """Dashboard view to display celestial bodies statistics."""
     # Fetch counts for celestial bodies
     total_planets = Planet.objects.count()
     total_comets = Comet.objects.count()
@@ -30,7 +31,8 @@ def dashboard(request):
         comet_change = CelestialBodyStats.calculate_change(latest_stats.total_comets, total_comets)
         asteroid_change = CelestialBodyStats.calculate_change(latest_stats.total_asteroids, total_asteroids)
         pha_change = CelestialBodyStats.calculate_change(latest_stats.total_pha, total_pha)
-        total_celestial_bodies_change = CelestialBodyStats.calculate_change(latest_stats.total_bodies, total_celestial_bodies)
+        total_celestial_bodies_change = CelestialBodyStats.calculate_change(latest_stats.total_bodies,
+                                                                            total_celestial_bodies)
     else:
         planet_change = comet_change = asteroid_change = pha_change = total_celestial_bodies_change = 0
 
@@ -109,17 +111,21 @@ def profile(request):
 
 @login_required
 def edit_profile(request):
-    """View for users to edit their profile information."""
+    """View for users to edit their profile information including profile picture."""
     if request.method == 'POST':
-        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
+        form = EditProfileForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
+
+        if form.is_valid() and profile_form.is_valid():
             form.save()
+            profile_form.save()
             messages.success(request, 'Your profile has been updated successfully!')
             return redirect('profile')
     else:
         form = EditProfileForm(instance=request.user)
+        profile_form = UserProfileForm(instance=request.user.userprofile)
 
-    return render(request, 'orrery/edit_profile.html', {'form': form})
+    return render(request, 'orrery/edit_profile.html', {'form': form, 'profile_form': profile_form})
 
 
 def body_detail(request, pk, body_type):

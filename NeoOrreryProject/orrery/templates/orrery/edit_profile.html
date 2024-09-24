@@ -7,7 +7,21 @@
         <h2>Edit Profile</h2>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <h4>Personal Information</h4>
+            {{ form.as_p }}  <!-- User form fields (name, email, etc.) -->
+
+            <h4>Profile Picture</h4>
+            {{ profile_form.as_p }}  <!-- Profile picture form -->
+
+            <!-- Display current profile picture if it exists -->
+            {% if user.userprofile.profile_picture %}
+                <div class="current-picture">
+                    <h5>Current Profile Picture:</h5>
+                    <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" style="width: 150px; height: 150px; border-radius: 50%;">
+                </div>
+            {% endif %}
+
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
     </div>

@@ -11,7 +11,41 @@
     {% endblock %}
 </head>
 <body>
-    <div class="container">
+    <div class="sidebar">
+        <h2>🌌 NEOORRY</h2>
+
+        <!-- Dynamic User Section -->
+        <div class="user-section">
+            {% if user.is_authenticated %}
+                <img src="{{ user.profile_picture.url }}" alt="User Photo"> <!-- Assuming profile_picture is a field -->
+                <div class="user-info">
+                    <div class="username">{{ user.first_name }} {{ user.last_name }}</div>
+                    <div class="user-email">{{ user.email }}</div>
+                </div>
+            {% else %}
+                <div class="user-info">
+                    <div class="username">Guest</div>
+                    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <ul>
+            {% if user.is_authenticated %}
+                <li>
+                    <a href="{% url 'dashboard' %}" class="dashboard-button">Dashboard</a>
+                    <ul class="sub-menu">
+                        <li><a href="{% url 'three_d_view' %}" class="model-view-button">3D Model View</a></li>
+                        <li><a href="{% url 'export_bodies_csv' %}" class="export-button">Export CSV</a></li>
+                        <li><a href="{% url 'profile' %}" class="profile-button">Profile</a></li>
+                        <li><a href="{% url 'logout' %}" class="btn btn-danger">Logout</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="container" style="margin-left: 270px;"> <!-- Sidebar width + margin -->
         <main class="main-content">
             {% block content %}
             {% endblock %}

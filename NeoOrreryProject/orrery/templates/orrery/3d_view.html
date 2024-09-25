@@ -1,20 +1,157 @@
 {% extends 'orrery/base.html' %}
 
-{% block title %}3D Orrery View{% endblock %}
-
 {% block content %}
     <h2 style="text-align: center; margin-top: 2rem;">3D Orrery View</h2>
     <div id="3d-view-container">
         <div id="3d-view"></div>
     </div>
-{% endblock %}
 
-{% block extra_head %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'orrery/3d_view.css' %}">
-{% endblock %}
-
-{% block extra_js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="{% static 'orrery/3d_view.js' %}"></script>
+    <script>
+        // Initialize the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+        const container = document.getElementById('3d-view');
+
+        // Function to set the size of the renderer to fill the container
+        function updateRendererSize() {
+            const containerWidth = container.clientWidth;
+            const containerHeight = window.innerHeight * 0.75; // Set the height to 75% of the viewport
+            renderer.setSize(containerWidth, containerHeight);
+            camera.aspect = containerWidth / containerHeight;
+            camera.updateProjectionMatrix();
+        }
+
+        // Call function to set initial size
+        updateRendererSize();
+        container.appendChild(renderer.domElement);
+
+        // Create the main light source (the Sun)
+        const light = new THREE.PointLight(0xffffff, 2, 500);
+        light.position.set(0, 0, 0);
+        scene.add(light);
+
+        // Add ambient light to illuminate all sides
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.2); // Soft white light
+        scene.add(ambientLight);
+
+        // Function to create a sphere (representing a celestial body)
+        function createBody(size, color, position) {
+            const geometry = new THREE.SphereGeometry(size, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ color: color });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(position.x, position.y, position.z);
+            return sphere;
+        }
+
+        // Function to create an orbit path
+        function createOrbitPath(radius) {
+            const orbitGeometry = new THREE.RingGeometry(radius - 0.2, radius + 0.2, 64);
+            const orbitMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+            const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+            orbit.rotation.x = Math.PI / 2; // Rotate to align with the x-y plane
+            return orbit;
+        }
+
+        // Create the Sun
+        const sun = createBody(5, 0xffff00, { x: 0, y: 0, z: 0 });
+        scene.add(sun);
+
+        // Define celestial bodies in the solar system
+        const celestialBodies = [
+            { name: "Mercury", size: 1, color: 0xbebebe, distance: 4 },
+            { name: "Venus", size: 1.5, color: 0xffa500, distance: 6 },
+            { name: "Earth", size: 1.5, color: 0x0000ff, distance: 8 },
+            { name: "Mars", size: 1.2, color: 0xff4500, distance: 10 },
+            { name: "Jupiter", size: 3, color: 0xffa07a, distance: 14 },
+            { name: "Saturn", size: 2.5, color: 0xf5deb3, distance: 18 },
+            { name: "Uranus", size: 2, color: 0x00ffff, distance: 22 },
+            { name: "Neptune", size: 2, color: 0x0000ff, distance: 26 },
+            { name: "Pluto", size: 0.8, color: 0xdcdcdc, distance: 30 }
+        ];
+
+        // Create and add the celestial bodies and their orbits
+        const bodyMeshes = celestialBodies.map(body => {
+            const sphere = createBody(body.size, body.color, { x: body.distance, y: 0, z: 0 });
+            const orbit = createOrbitPath(body.distance);
+            scene.add(sphere);
+            scene.add(orbit);
+            return { sphere, distance: body.distance };
+        });
+
+        // Position the camera
+        camera.position.set(0, 60, 90);  // Adjust camera position for better overview
+        camera.lookAt(0, 0, 0);  // Ensure the camera is looking at the center (Sun)
+
+        // Animation loop
+        const animate = function () {
+            requestAnimationFrame(animate);
+
+            // Rotate the Sun
+            sun.rotation.y += 0.005;
+
+            // Animate celestial bodies to orbit around the Sun
+            bodyMeshes.forEach((bodyMesh, index) => {
+                const time = Date.now() * 0.0005 + index;
+                bodyMesh.sphere.position.x = bodyMesh.distance * Math.cos(time);
+                bodyMesh.sphere.position.z = bodyMesh.distance * Math.sin(time);
+                bodyMesh.sphere.rotation.y += 0.01; // Rotate the body itself
+            });
+
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            updateRendererSize();
+        });
+    </script>
 {% endblock %}
+
+<style>
+    /* Full width and center container styling */
+    #3d-view-container {
+        margin: 0 auto;
+        padding: 1rem;
+        width: 100%; /* Ensure it takes the full width */
+        max-width: 1400px; /* Limit the maximum width */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f4f8; /* Same background color as page */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #3d-view {
+        width: 100%;
+        height: 75vh;  /* Set height to 75% of the viewport */
+        max-width: 1000px; /* Constrain width for larger displays */
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+        #3d-view {
+            height: 60vh; /* Adjust height for tablets */
+        }
+    }
+
+    @media (max-width: 480px) {
+        #3d-view {
+            height: 50vh; /* Adjust height for mobile */
+        }
+    }
+
+    /* Add spacing after header and before footer */
+    body > header {
+        margin-bottom: 20px;
+    }
+
+    footer {
+        margin-top: 20px;
+    }
+</style>

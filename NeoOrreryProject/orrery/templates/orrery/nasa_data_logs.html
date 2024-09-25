@@ -1,0 +1,28 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}NASA Data Logs{% endblock %}
+
+{% block content %}
+    <h2>Your NASA Data Logs</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Action</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.action }}</td>
+                <td>{{ log.timestamp }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">No logs found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

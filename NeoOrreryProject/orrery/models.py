@@ -103,3 +103,12 @@ class CelestialBodyStats(models.Model):
 
     def __str__(self):
         return f"Celestial Body Stats at {self.timestamp}"
+
+
+class NasaDataLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action = models.CharField(max_length=255)  # Log what action was performed (e.g., "Updated NASA Data", "Requested Close Approaches Alert")
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.action} at {self.timestamp}"

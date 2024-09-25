@@ -4,10 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # 'path' should now be correctly recognized
-    path('', include('orrery.urls')),  # Ensure your app's URLs are included here
+    # Admin panel URL
+    path('admin/', admin.site.urls),
+
+    # Include URLs from the 'orrery' app
+    path('', include('orrery.urls')),
 ]
 
-# This will serve media files during development
+# Serve media files in development
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

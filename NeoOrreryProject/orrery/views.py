@@ -1,29 +1,26 @@
 import csv
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-from django.contrib.auth.models import User
-from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile
+from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog
 from .forms import EditProfileForm, UserProfileForm
+from .management.commands.fetch_nasa_data import Command as FetchNASADataCommand
+from .management.commands.check_close_approaches import Command as CloseApproachesCommand
 
 
 @login_required
 def dashboard(request):
     """Dashboard view to display celestial bodies statistics."""
-    # Fetch counts for celestial bodies
     total_planets = Planet.objects.count()
     total_comets = Comet.objects.count()
     total_asteroids = Asteroid.objects.count()
     total_pha = Asteroid.objects.filter(is_potentially_hazardous=True).count()
 
-    # Total celestial bodies = sum of all categories
     total_celestial_bodies = total_planets + total_comets + total_asteroids
 
-    # Fetch the latest celestial body stats to calculate percentage changes
     latest_stats = CelestialBodyStats.objects.last()
 
     if latest_stats:
@@ -31,12 +28,10 @@ def dashboard(request):
         comet_change = CelestialBodyStats.calculate_change(latest_stats.total_comets, total_comets)
         asteroid_change = CelestialBodyStats.calculate_change(latest_stats.total_asteroids, total_asteroids)
         pha_change = CelestialBodyStats.calculate_change(latest_stats.total_pha, total_pha)
-        total_celestial_bodies_change = CelestialBodyStats.calculate_change(latest_stats.total_bodies,
-                                                                            total_celestial_bodies)
+        total_celestial_bodies_change = CelestialBodyStats.calculate_change(latest_stats.total_bodies, total_celestial_bodies)
     else:
         planet_change = comet_change = asteroid_change = pha_change = total_celestial_bodies_change = 0
 
-    # Create or update stats entry
     new_stats = CelestialBodyStats(
         total_bodies=total_celestial_bodies,
         total_planets=total_planets,
@@ -77,7 +72,6 @@ def dashboard(request):
     elif sort_by == 'distance_from_earth':
         celestial_bodies = sorted(celestial_bodies, key=lambda x: x.distance)
 
-    # Check if user is opted into Close Approaches Alert
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     is_opted_in = user_profile.is_opted_in
 
@@ -160,6 +154,38 @@ def toggle_alert_subscription(request):
     return redirect('dashboard')
 
 
+@login_required
+def update_nasa_data(request):
+    """Allows users to manually update NASA data."""
+    if request.method == 'POST':
+        fetch_nasa_data = FetchNASADataCommand()
+        fetch_nasa_data.handle()
+
+        # Log this action
+        NasaDataLog.objects.create(user=request.user, action='Updated NASA data')
+
+        messages.success(request, 'NASA data updated successfully!')
+        return redirect('dashboard')
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
+@login_required
+def get_close_approaches_now(request):
+    """Allows users to get a personal close approach alert."""
+    if request.method == 'POST':
+        close_approaches = CloseApproachesCommand()
+        close_approaches.handle()
+
+        # Log this action
+        NasaDataLog.objects.create(user=request.user, action='Requested Close Approaches Alert')
+
+        messages.success(request, 'Close Approaches Alert sent to you!')
+        return redirect('dashboard')
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
 def export_bodies_csv(request):
     """Exports celestial bodies data to CSV."""
     response = HttpResponse(content_type='text/csv')
@@ -239,3 +265,10 @@ def signup(request):
         form = UserCreationForm()
 
     return render(request, 'orrery/signup.html', {'form': form})
+
+
+@login_required
+def nasa_data_logs(request):
+    """View to display the NASA data logs."""
+    logs = NasaDataLog.objects.all().order_by('-timestamp')
+    return render(request, 'orrery/nasa_data_logs.html', {'logs': logs})

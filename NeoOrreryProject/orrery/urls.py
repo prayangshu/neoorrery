@@ -14,4 +14,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('toggle-alert/', views.toggle_alert_subscription, name='toggle_alert_subscription'),
+    path('update-nasa-data/', views.update_nasa_data, name='update_nasa_data'),
+    path('get-close-approaches-now/', views.get_close_approaches_now, name='get_close_approaches_now'),
+    path('nasa-data-logs/', views.nasa_data_logs, name='nasa_data_logs'),  # Added log view path
 ]

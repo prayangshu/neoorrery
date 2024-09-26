@@ -49,7 +49,7 @@ ROOT_URLCONF = 'NeoOrreryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Specify template directories here if needed
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Optionally use templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,3 +135,4 @@ if not DEBUG:
 
 # Configure Django App for Heroku
 django_heroku.settings(locals())
+

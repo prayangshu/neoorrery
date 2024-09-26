@@ -67,7 +67,7 @@ TEMPLATES = [
 ]
 
 # WSGI application configuration
-WSGI_APPLICATION = 'NeoOrreryProject.wsgi.application'
+WSGI_APPLICATION = 'NeoOrreryProject.wsgi.application'  # Ensure wsgi.py exists
 
 # Database configuration (using PostgreSQL for Heroku, fallback to SQLite for local)
 DATABASES = {

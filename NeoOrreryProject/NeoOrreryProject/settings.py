@@ -1,11 +1,5 @@
 import os
 from pathlib import Path
-import django_heroku
-import dj_database_url
-from dotenv import load_dotenv
-
-# Load environment variables from .env file (for local development)
-load_dotenv()
 
 # Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,8 +10,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-7vb%lb!y@9gdtc6cm#&!0fpq%z
 # Set DEBUG to False in production
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Hosts allowed to access the project, including Heroku app domain
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,neoorrery-292eed339cfc.herokuapp.com').split(',')
+# Hosts allowed to access the project
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # Installed apps, including the orrery app
 INSTALLED_APPS = [
@@ -27,17 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'orrery',
+    'orrery',  # Your app
 ]
 
-# Only include sslserver in development mode
-if DEBUG:
-    INSTALLED_APPS += ['sslserver']
-
-# Middleware configuration, including WhiteNoise for static files
+# Middleware configuration
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise middleware for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -53,7 +42,7 @@ ROOT_URLCONF = 'NeoOrreryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Optionally use templates directory
+        'DIRS': [],  # Specify template directories here if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,11 +56,14 @@ TEMPLATES = [
 ]
 
 # WSGI application configuration
-WSGI_APPLICATION = 'NeoOrreryProject.wsgi.application'  # Ensure wsgi.py exists
+WSGI_APPLICATION = 'NeoOrreryProject.wsgi.application'
 
-# Database configuration (using PostgreSQL for Heroku, fallback to SQLite for local)
+# Database configuration (SQLite by default)
 DATABASES = {
-    'default': dj_database_url.config(default=f'sqlite:///{BASE_DIR}/db.sqlite3', conn_max_age=600)
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 # Password validation settings
@@ -92,7 +84,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'orrery/static']  # Directory for development static files
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory for production static files after collectstatic
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user-uploaded content)
 MEDIA_URL = '/media/'
@@ -117,25 +108,16 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Default auto field for primary keys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Security settings for production
+# Security settings
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 
+# Additional security settings for production
 if not DEBUG:
-    # Use secure cookies
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
-    # Redirect all HTTP traffic to HTTPS
     SECURE_SSL_REDIRECT = True
-
-    # Use HTTP Strict Transport Security (HSTS) for 1 year
-    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for one year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-
-    # Prevent the browser from guessing file types
     SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Configure Django App for Heroku
-django_heroku.settings(locals())

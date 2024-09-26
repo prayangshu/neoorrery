@@ -28,8 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'orrery',
-    'sslserver',
 ]
+
+# Only include sslserver in development mode
+if DEBUG:
+    INSTALLED_APPS += ['sslserver']
 
 # Middleware configuration, including WhiteNoise for static files
 MIDDLEWARE = [
@@ -136,4 +139,3 @@ if not DEBUG:
 
 # Configure Django App for Heroku
 django_heroku.settings(locals())
-

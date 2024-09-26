@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import django_heroku
+import dj_database_url
 
 # Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,8 +12,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-7vb%lb!y@9gdtc6cm#&!0fpq%z
 # Set DEBUG to False in production
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Hosts allowed to access the project
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# Hosts allowed to access the project, including Heroku app domain
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,neoorrery-292eed339cfc.herokuapp.com').split(',')
 
 # Installed apps, including the orrery app
 INSTALLED_APPS = [
@@ -24,9 +26,10 @@ INSTALLED_APPS = [
     'orrery',  # Your app
 ]
 
-# Middleware configuration
+# Middleware configuration, including WhiteNoise for static files
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise middleware for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -58,12 +61,9 @@ TEMPLATES = [
 # WSGI application configuration
 WSGI_APPLICATION = 'NeoOrreryProject.wsgi.application'
 
-# Database configuration (SQLite by default)
+# Database configuration (using PostgreSQL for Heroku, fallback to SQLite for local)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=f'sqlite:///{BASE_DIR}/db.sqlite3', conn_max_age=600)
 }
 
 # Password validation settings
@@ -84,6 +84,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'orrery/static']  # Directory for development static files
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory for production static files after collectstatic
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (user-uploaded content)
 MEDIA_URL = '/media/'
@@ -108,16 +109,25 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Default auto field for primary keys
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Security settings
+# Security settings for production
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = 'DENY'
 
-# Additional security settings for production
 if not DEBUG:
+    # Use secure cookies
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+    # Redirect all HTTP traffic to HTTPS
     SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for one year
+
+    # Use HTTP Strict Transport Security (HSTS) for 1 year
+    SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+
+    # Prevent the browser from guessing file types
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Configure Django App for Heroku
+django_heroku.settings(locals())

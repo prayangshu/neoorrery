@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'orrery',
+    'sslserver',
 ]
 
 # Middleware configuration, including WhiteNoise for static files

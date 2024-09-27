@@ -9,6 +9,7 @@ from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm
 from .management.commands.email_close_approaches import Command as EmailCloseApproachesCommand
 from .management.commands.fetch_real_time_close_approaches import Command as FetchRealTimeCloseApproachesCommand
 
+
 @login_required
 def dashboard(request):
     """Dashboard view displaying celestial body statistics and real-time close approaches."""
@@ -41,7 +42,7 @@ def dashboard(request):
 
     # Celestial bodies search, filter, and sort logic
     celestial_bodies = []
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('table_search', '')
     filter_by = request.GET.get('filter_by', '')
     sort_by = request.GET.get('sort_by', '')
 
@@ -76,6 +77,11 @@ def dashboard(request):
 
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     is_opted_in = user_profile.is_opted_in
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':  # Return only the table section for AJAX calls
+        return render(request, 'orrery/table_data.html', {
+            'celestial_bodies': celestial_bodies
+        })
 
     context = {
         'celestial_bodies': celestial_bodies,
@@ -259,14 +265,14 @@ def fetch_orbital_data(request):
 def signup(request):
     """Handles user signup, including email registration."""
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)  # Using the custom form with email
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully!')
             return redirect('dashboard')
     else:
-        form = CustomUserCreationForm()  # Using the custom form
+        form = CustomUserCreationForm()
 
     return render(request, 'orrery/signup.html', {'form': form})
 

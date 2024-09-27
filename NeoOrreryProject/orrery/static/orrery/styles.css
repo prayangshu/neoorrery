@@ -118,7 +118,7 @@
 /* Dashboard Cards */
 .dashboard-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Flexible layout for various screens */
     gap: 20px;
     margin-bottom: 20px;
 }
@@ -173,46 +173,84 @@
     transform: scale(1.05);
 }
 
-/* Graph and Details Section */
-.graph-container {
-    margin-top: 40px;
+/* Chart and Statistics Section */
+.chart-section {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 20px;
 }
 
-.chart-section {
-    flex: 1;
+.statistics-header {
+    text-align: center;
+    flex-basis: 100%;
+    margin-bottom: 10px;
+}
+
+/* Updated Chart Size and Centering */
+.box.left-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Ensure the chart is vertically centered */
+    height: 100%; /* Takes up the full height of the box */
+}
+
+#celestial-body-chart {
+    width: 280px !important;  /* Reduced width */
+    height: 280px !important;  /* Reduced height */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#celestial-body-chart:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Box Layout */
+.statistics-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid for boxes */
+    gap: 20px;
     margin-bottom: 20px;
 }
 
-.details-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.details-section div {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-/* Pie Chart Hover Animation */
-canvas {
-    max-width: 500px;
+.box {
+    background-color: white;
+    padding: 15px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 400px; /* Set consistent height for all boxes */
 }
 
-canvas:hover {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+.box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
 }
+
+/* Responsive Box Layout */
+@media only screen and (max-width: 768px) {
+    .statistics-section {
+        grid-template-columns: 1fr; /* Stack boxes on smaller screens */
+    }
+
+    .box {
+        width: 100%; /* Ensure boxes take full width on small screens */
+    }
+}
+
 
 /* Table Styling */
+
+.celestial-database-heading {
+    margin-top: 40px;
+}
 .celestial-table {
     width: 100%;
     border-collapse: collapse;
@@ -253,6 +291,29 @@ canvas:hover {
 
 .celestial-table td a:hover {
     text-decoration: underline;
+}
+
+/* Search and Filter Form */
+.search-filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 48%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.filter-input {
+    width: 48%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 /* Footer Styling */

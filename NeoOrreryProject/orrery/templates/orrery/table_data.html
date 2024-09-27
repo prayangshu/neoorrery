@@ -1,0 +1,13 @@
+{% for body in celestial_bodies %}
+<tr>
+    <td><a href="{% url 'body_detail' body.pk body.get_body_type %}">{{ body.name }}</a></td>
+    <td>{{ body.get_body_type }}</td>
+    <td>{{ body.size|default:"N/A" }}</td>
+    <td>{{ body.distance|default:"N/A" }}</td>
+    <td>{{ body.last_updated|date:"Y-m-d" }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5">No matching celestial bodies found</td>
+</tr>
+{% endfor %}

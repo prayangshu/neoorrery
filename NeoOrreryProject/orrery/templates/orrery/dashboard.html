@@ -1,4 +1,5 @@
 {% extends 'orrery/base.html' %}
+{% load static %}
 
 {% block title %}NeoOrrery Dashboard{% endblock %}
 
@@ -96,103 +97,192 @@
         </div>
     </div>
 
-    <!-- Real-Time Close Approaches Section -->
-    <div class="close-approaches-section">
-        <h3>Real-Time Close Approaches</h3>
-        <table class="close-approaches-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Distance (km)</th>
-                    <th>Velocity (km/h)</th>
-                    <th>Approach Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for approach in close_approaches %}
-                <tr>
-                    <td>{{ approach.name }}</td>
-                    <td>{{ approach.distance|floatformat:0 }}</td>
-                    <td>{{ approach.velocity|floatformat:0 }}</td>
-                    <td>{{ approach.approach_date }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">No close approaches found</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Critical Close Approaches Section -->
-    <div class="critical-approaches-section">
-        <h3>Critical Close Approaches</h3>
-        <table class="critical-approaches-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Distance (km)</th>
-                    <th>Velocity (km/h)</th>
-                    <th>Approach Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for approach in critical_approaches %}
-                <tr>
-                    <td>{{ approach.name }}</td>
-                    <td>{{ approach.distance|floatformat:0 }}</td>
-                    <td>{{ approach.velocity|floatformat:0 }}</td>
-                    <td>{{ approach.approach_date }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">No critical close approaches found</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pie Chart and Details Section -->
-    <div class="graph-container">
-        <div class="chart-section">
-            <canvas id="celestial-body-chart"></canvas>
+    <!-- Statistics, Real-Time Approaches, and Critical Approaches Section -->
+    <div class="statistics-section">
+        <!-- Left: Statistics (Pie Chart) -->
+        <div class="box left-box">
+            <h3>Statistics</h3>
+            <canvas id="celestial-body-chart" width="300" height="300"></canvas>
         </div>
-        <div class="details-section">
-            <div>Planets: <span id="planets-percentage"></span></div>
-            <div>Asteroids: <span id="asteroids-percentage"></span></div>
-            <div>PHA: <span id="pha-percentage"></span></div>
-            <div>Comets: <span id="comets-percentage"></span></div>
+
+        <!-- Center: Real-Time Close Approaches -->
+        <div class="box center-box">
+            <h3>Real-Time Close Approaches</h3>
+            <table class="celestial-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Distance (km)</th>
+                        <th>Velocity (km/h)</th>
+                        <th>Approach Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for approach in close_approaches %}
+                    <tr>
+                        <td>{{ approach.name }}</td>
+                        <td>{{ approach.distance|floatformat:0 }}</td>
+                        <td>{{ approach.velocity|floatformat:0 }}</td>
+                        <td>{{ approach.approach_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No close approaches found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Right: Critical Close Approaches -->
+        <div class="box right-box">
+            <h3>Critical Close Approaches</h3>
+            <table class="celestial-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Distance (km)</th>
+                        <th>Velocity (km/h)</th>
+                        <th>Approach Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for approach in critical_approaches %}
+                    <tr>
+                        <td>{{ approach.name }}</td>
+                        <td>{{ approach.distance|floatformat:0 }}</td>
+                        <td>{{ approach.velocity|floatformat:0 }}</td>
+                        <td>{{ approach.approach_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No critical close approaches found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- NASA Eyes on Asteroids Iframe Section -->
-    <div class="iframe-container">
-        <iframe src="https://eyes.nasa.gov/apps/asteroids/#/home" title="NASA Eyes on Asteroids" style="border: none;"></iframe>
+    <!-- Celestial Bodies Database Title -->
+    <h3 class="celestial-database-heading">Celestial Bodies Database</h3>
+
+    <!-- Search and Filter Form -->
+    <div class="search-filter-container">
+        <input type="text" id="tableSearch" name="table_search" placeholder="Search table data..." class="search-input">
+        <select id="filterBy" class="filter-input">
+            <option value="">All Bodies</option>
+            <option value="Planet">Planets</option>
+            <option value="Comet">Comets</option>
+            <option value="Asteroid">Asteroids</option>
+            <option value="PHA">Potentially Hazardous Asteroids</option>
+        </select>
     </div>
 
     <!-- Table Section -->
-    <table class="celestial-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Body Type</th>
-                <th>Size (meters)</th>
-                <th>Distance from Earth (km)</th>
-                <th>Last Updated</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for body in celestial_bodies %}
-            <tr>
-                <td><a href="{% url 'body_detail' body.pk body.get_body_type %}">{{ body.name }}</a></td>
-                <td>{{ body.get_body_type }}</td>
-                <td>{{ body.size|default:"N/A" }}</td>
-                <td>{{ body.distance|default:"N/A" }}</td>
-                <td>{{ body.last_updated|date:"Y-m-d" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div id="tableContainer">
+        <table class="celestial-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Body Type</th>
+                    <th>Size (meters)</th>
+                    <th>Distance from Earth (km)</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {% for body in celestial_bodies %}
+                <tr>
+                    <td><a href="{% url 'body_detail' body.pk body.get_body_type %}">{{ body.name }}</a></td>
+                    <td>{{ body.get_body_type }}</td>
+                    <td>{{ body.size|default:"N/A" }}</td>
+                    <td>{{ body.distance|default:"N/A" }}</td>
+                    <td>{{ body.last_updated|date:"Y-m-d" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- AJAX Script to Fetch Data Based on Search and Filter -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('tableSearch');
+            const filterByInput = document.getElementById('filterBy');
+
+            searchInput.addEventListener('input', fetchFilteredTable);
+            filterByInput.addEventListener('change', fetchFilteredTable);
+
+            function fetchFilteredTable() {
+                const searchQuery = searchInput.value;
+                const filterBy = filterByInput.value;
+
+                const xhr = new XMLHttpRequest();
+                const url = "{% url 'dashboard' %}?table_search=" + encodeURIComponent(searchQuery) + "&filter_by=" + encodeURIComponent(filterBy);
+
+                xhr.open('GET', url, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const tableBody = document.getElementById('tableBody');
+                        tableBody.innerHTML = xhr.responseText;
+                    }
+                };
+
+                xhr.send();
+            }
+        });
+    </script>
+
+    <!-- Chart.js Script for Pie Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const totalPlanets = parseFloat(document.getElementById('totalPlanets').textContent);
+            const totalAsteroids = parseFloat(document.getElementById('totalAsteroids').textContent);
+            const totalPHA = parseFloat(document.getElementById('totalPHA').textContent);
+            const totalComets = parseFloat(document.getElementById('totalComets').textContent);
+
+            const totalBodies = totalPlanets + totalAsteroids + totalPHA + totalComets;
+
+            if (totalBodies > 0) {
+                const ctx = document.getElementById('celestial-body-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Planets', 'Asteroids', 'PHA', 'Comets'],
+                        datasets: [{
+                            label: 'Celestial Bodies',
+                            data: [totalPlanets, totalAsteroids, totalPHA, totalComets],
+                            backgroundColor: ['#003049', '#d62828', '#f77f00', '#fcbf49'],
+                            hoverOffset: 8,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        const total = context.dataset.data.reduce((sum, value) => sum + value, 0);
+                                        const value = context.raw;
+                                        label += value + ' (' + ((value / total) * 100).toFixed(2) + '%)';
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        animation: { animateScale: true, animateRotate: true }
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}

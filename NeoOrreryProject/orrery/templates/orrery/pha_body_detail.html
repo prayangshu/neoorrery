@@ -5,9 +5,18 @@
 {% block content %}
     <div class="detail-container">
         <h2>Potentially Hazardous Asteroid (PHA): {{ body.name }}</h2>
-        <p><strong>Size:</strong> {{ body.size|default:"N/A" }} meters</p>
-        <p><strong>Distance from Earth:</strong> {{ body.distance|default:"N/A" }} km</p>
+        <p><strong>Size:</strong> {{ body.size|default_if_none:"N/A" }} meters</p>
+        <p><strong>Distance from Earth:</strong> {{ body.distance|default_if_none:"N/A" }} km</p>
         <p><strong>Potential Hazard:</strong> Yes</p>
         <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+
+        {% if body.orbital_parameters %}
+            <h3>Orbital Parameters</h3>
+            <p><strong>Semi-Major Axis:</strong> {{ body.orbital_parameters.semi_major_axis|default_if_none:"N/A" }} AU</p>
+            <p><strong>Eccentricity:</strong> {{ body.orbital_parameters.eccentricity|default_if_none:"N/A" }}</p>
+            <p><strong>Inclination:</strong> {{ body.orbital_parameters.inclination|default_if_none:"N/A" }} degrees</p>
+            <p><strong>Argument of Periapsis:</strong> {{ body.orbital_parameters.argument_of_periapsis|default_if_none:"N/A" }} degrees</p>
+            <p><strong>Longitude of Ascending Node:</strong> {{ body.orbital_parameters.longitude_of_ascending_node|default_if_none:"N/A" }} degrees</p>
+        {% endif %}
     </div>
 {% endblock %}

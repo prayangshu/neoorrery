@@ -2,11 +2,10 @@ import csv
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog
-from .forms import EditProfileForm, UserProfileForm
+from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm
 from .management.commands.check_close_approaches import Command as CloseApproachesCommand
 
 
@@ -129,7 +128,7 @@ def body_detail(request, pk, body_type):
     elif body_type == 'Comet':
         body = get_object_or_404(Comet, pk=pk)
         template = 'orrery/comets_body_detail.html'
-    elif body_type == 'Asteroid':
+    elif body_type == 'Asteroid' or body_type == 'PHA':
         body = get_object_or_404(Asteroid, pk=pk)
         template = 'orrery/pha_body_detail.html' if body.is_potentially_hazardous else 'orrery/asteroids_body_detail.html'
     else:
@@ -236,16 +235,16 @@ def fetch_orbital_data(request):
 
 
 def signup(request):
-    """Handles user signup."""
+    """Handles user signup with email."""
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)  # Using the custom form with email
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, 'Account created successfully!')
             return redirect('dashboard')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()  # Using the custom form
 
     return render(request, 'orrery/signup.html', {'form': form})
 

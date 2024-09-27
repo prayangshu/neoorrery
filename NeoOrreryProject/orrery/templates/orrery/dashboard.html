@@ -27,18 +27,23 @@
                 </button>
             </form>
 
-            <!-- Get Close Approaches Now -->
-            <form action="{% url 'get_close_approaches_now' %}" method="POST" style="margin-top: 10px;">
+            <!-- Email Close Approaches Alert -->
+            <form action="{% url 'email_close_approaches' %}" method="POST" style="margin-top: 10px;">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-info">Get Close Approaches Alert Now!</button>
+                <button type="submit" class="btn btn-info">Email Close Approaches Alert!</button>
             </form>
 
-                    <!-- Logout Form -->
+            <!-- Fetch Real-Time Close Approaches -->
+            <form action="{% url 'fetch_real_time_close_approaches' %}" method="POST" style="margin-top: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-warning">Update Real-Time Close Approaches</button>
+            </form>
+
+            <!-- Logout Form -->
             <form action="{% url 'logout' %}" method="POST" style="margin-top: 10px;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Logout</button>
             </form>
-
         {% endif %}
     </div>
 
@@ -49,7 +54,8 @@
             <h2>{{ total_celestial_bodies }}</h2>
             {% if total_celestial_bodies_change %}
                 <p class="{% if total_celestial_bodies_change > 0 %}up{% else %}down{% endif %}">
-                {{ total_celestial_bodies_change }}%</p>
+                    {{ total_celestial_bodies_change }}%
+                </p>
             {% endif %}
         </div>
         <div class="card">
@@ -57,7 +63,8 @@
             <h2>{{ total_planets }}</h2>
             {% if planets_change %}
                 <p class="{% if planets_change > 0 %}up{% else %}down{% endif %}">
-                {{ planets_change }}%</p>
+                    {{ planets_change }}%
+                </p>
             {% endif %}
         </div>
         <div class="card">
@@ -65,7 +72,8 @@
             <h2>{{ total_asteroids }}</h2>
             {% if asteroids_change %}
                 <p class="{% if asteroids_change > 0 %}up{% else %}down{% endif %}">
-                {{ asteroids_change }}%</p>
+                    {{ asteroids_change }}%
+                </p>
             {% endif %}
         </div>
         <div class="card">
@@ -73,7 +81,8 @@
             <h2>{{ total_pha }}</h2>
             {% if pha_change %}
                 <p class="{% if pha_change > 0 %}up{% else %}down{% endif %}">
-                {{ pha_change }}%</p>
+                    {{ pha_change }}%
+                </p>
             {% endif %}
         </div>
         <div class="card">
@@ -81,9 +90,68 @@
             <h2>{{ total_comets }}</h2>
             {% if comets_change %}
                 <p class="{% if comets_change > 0 %}up{% else %}down{% endif %}">
-                {{ comets_change }}%</p>
+                    {{ comets_change }}%
+                </p>
             {% endif %}
         </div>
+    </div>
+
+    <!-- Real-Time Close Approaches Section -->
+    <div class="close-approaches-section">
+        <h3>Real-Time Close Approaches</h3>
+        <table class="close-approaches-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Distance (km)</th>
+                    <th>Velocity (km/h)</th>
+                    <th>Approach Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for approach in close_approaches %}
+                <tr>
+                    <td>{{ approach.name }}</td>
+                    <td>{{ approach.distance|floatformat:0 }}</td>
+                    <td>{{ approach.velocity|floatformat:0 }}</td>
+                    <td>{{ approach.approach_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No close approaches found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Critical Close Approaches Section -->
+    <div class="critical-approaches-section">
+        <h3>Critical Close Approaches</h3>
+        <table class="critical-approaches-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Distance (km)</th>
+                    <th>Velocity (km/h)</th>
+                    <th>Approach Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for approach in critical_approaches %}
+                <tr>
+                    <td>{{ approach.name }}</td>
+                    <td>{{ approach.distance|floatformat:0 }}</td>
+                    <td>{{ approach.velocity|floatformat:0 }}</td>
+                    <td>{{ approach.approach_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No critical close approaches found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <!-- Pie Chart and Details Section -->

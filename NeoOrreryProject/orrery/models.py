@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pictures/', default='default.jpg', null=True, blank=True)
@@ -10,7 +9,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s profile"
-
 
 class CelestialBody(models.Model):
     name = models.CharField(max_length=100)
@@ -30,7 +28,6 @@ class CelestialBody(models.Model):
         """Return the type of celestial body (to be overridden by subclasses)."""
         return "CelestialBody"
 
-
 class Planet(CelestialBody):
     semi_major_axis = models.FloatField(blank=True, null=True)  # in AU
     eccentricity = models.FloatField(blank=True, null=True)
@@ -45,7 +42,6 @@ class Planet(CelestialBody):
     def get_body_type(self):
         return "Planet"
 
-
 class Comet(CelestialBody):
     orbital_period = models.FloatField(blank=True, null=True)  # in years
     eccentricity = models.FloatField(blank=True, null=True)
@@ -59,7 +55,6 @@ class Comet(CelestialBody):
     def get_body_type(self):
         return "Comet"
 
-
 class Asteroid(CelestialBody):
     is_potentially_hazardous = models.BooleanField(default=False)
 
@@ -71,7 +66,6 @@ class Asteroid(CelestialBody):
 
     def get_body_type(self):
         return "PHA" if self.is_potentially_hazardous else "Asteroid"
-
 
 class CelestialBodyStats(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
@@ -104,7 +98,6 @@ class CelestialBodyStats(models.Model):
     def __str__(self):
         return f"Celestial Body Stats at {self.timestamp}"
 
-
 class NasaDataLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)  # Log what action was performed (e.g., "Updated NASA Data", "Requested Close Approaches Alert")
@@ -112,3 +105,14 @@ class NasaDataLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.action} at {self.timestamp}"
+
+class RealTimeCloseApproach(models.Model):
+    name = models.CharField(max_length=255)
+    nasa_id = models.CharField(max_length=255)
+    distance = models.FloatField(help_text="Distance from Earth in kilometers")
+    velocity = models.FloatField(help_text="Velocity in km/h")
+    approach_date = models.DateField()
+    is_critical = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} - {self.distance} km"

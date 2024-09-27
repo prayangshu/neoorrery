@@ -146,3 +146,8 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(minute=0, hour='*/6'),  # Run every 6 hours
     },
 }
+
+# Disable SSL verification for development if necessary
+if DEBUG:
+    import ssl
+    ssl._create_default_https_context = ssl._create_unverified_context

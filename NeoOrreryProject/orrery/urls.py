@@ -14,6 +14,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('toggle-alert/', views.toggle_alert_subscription, name='toggle_alert_subscription'),
-    path('get-close-approaches-now/', views.get_close_approaches_now, name='get_close_approaches_now'),
-    path('nasa-data-logs/', views.nasa_data_logs, name='nasa_data_logs'),  # Added log view path
+    path('email-close-approaches/', views.email_close_approaches, name='email_close_approaches'),  # Email close approaches alert
+    path('fetch-real-time-close-approaches/', views.fetch_real_time_close_approaches, name='fetch_real_time_close_approaches'),  # Real-time close approaches update
+    path('nasa-data-logs/', views.nasa_data_logs, name='nasa_data_logs'),  # NASA data logs
 ]

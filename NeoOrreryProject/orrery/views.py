@@ -4,14 +4,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog
+from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog, RealTimeCloseApproach
 from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm
-from .management.commands.check_close_approaches import Command as CloseApproachesCommand
-
+from .management.commands.email_close_approaches import Command as EmailCloseApproachesCommand
+from .management.commands.fetch_real_time_close_approaches import Command as FetchRealTimeCloseApproachesCommand
 
 @login_required
 def dashboard(request):
-    """Dashboard view to display celestial bodies statistics."""
+    """Dashboard view displaying celestial body statistics and real-time close approaches."""
     total_planets = Planet.objects.count()
     total_comets = Comet.objects.count()
     total_asteroids = Asteroid.objects.count()
@@ -70,6 +70,10 @@ def dashboard(request):
     elif sort_by == 'distance_from_earth':
         celestial_bodies = sorted(celestial_bodies, key=lambda x: x.distance)
 
+    # Fetch real-time close approaches
+    close_approaches = RealTimeCloseApproach.objects.filter(is_critical=False)
+    critical_approaches = RealTimeCloseApproach.objects.filter(is_critical=True)
+
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     is_opted_in = user_profile.is_opted_in
 
@@ -89,6 +93,8 @@ def dashboard(request):
         'filter_by': filter_by,
         'sort_by': sort_by,
         'is_opted_in': is_opted_in,
+        'close_approaches': close_approaches,
+        'critical_approaches': critical_approaches
     }
 
     return render(request, 'orrery/dashboard.html', context)
@@ -96,14 +102,14 @@ def dashboard(request):
 
 @login_required
 def profile(request):
-    """View for user's profile information."""
+    """View displaying the user's profile information."""
     user_profile = UserProfile.objects.get(user=request.user)
     return render(request, 'orrery/profile.html', {'user_profile': user_profile})
 
 
 @login_required
 def edit_profile(request):
-    """View for users to edit their profile information including profile picture."""
+    """View allowing users to edit their profile information, including their profile picture."""
     if request.method == 'POST':
         form = EditProfileForm(request.POST, instance=request.user)
         profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
@@ -139,7 +145,7 @@ def body_detail(request, pk, body_type):
 
 @login_required
 def toggle_alert_subscription(request):
-    """Toggles the user's subscription to Close Approaches Alert."""
+    """Toggles the user's subscription to close approach alerts."""
     user_profile = UserProfile.objects.get(user=request.user)
     user_profile.is_opted_in = not user_profile.is_opted_in
     user_profile.save()
@@ -153,16 +159,32 @@ def toggle_alert_subscription(request):
 
 
 @login_required
-def get_close_approaches_now(request):
-    """Allows users to get a personal close approach alert."""
+def email_close_approaches(request):
+    """Allows users to manually trigger the email alert for close approaches."""
     if request.method == 'POST':
-        close_approaches = CloseApproachesCommand()
-        close_approaches.handle()
+        email_alert = EmailCloseApproachesCommand()
+        email_alert.handle()
 
         # Log this action
-        NasaDataLog.objects.create(user=request.user, action='Requested Close Approaches Alert')
+        NasaDataLog.objects.create(user=request.user, action='Requested Close Approaches Email Alert')
 
-        messages.success(request, 'Close Approaches Alert sent to you!')
+        messages.success(request, 'Close Approaches Alert has been sent to your email!')
+        return redirect('dashboard')
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
+@login_required
+def fetch_real_time_close_approaches(request):
+    """Allows users to fetch real-time close approaches."""
+    if request.method == 'POST':
+        fetch_approaches = FetchRealTimeCloseApproachesCommand()
+        fetch_approaches.handle()
+
+        # Log this action
+        NasaDataLog.objects.create(user=request.user, action='Fetched Real-Time Close Approaches')
+
+        messages.success(request, 'Real-Time Close Approaches have been updated!')
         return redirect('dashboard')
     else:
         return HttpResponseNotAllowed(['POST'])
@@ -194,7 +216,7 @@ def export_bodies_csv(request):
 
 
 def three_d_view(request):
-    """Render the 3D view of celestial bodies."""
+    """Renders the 3D view of celestial bodies."""
     return render(request, 'orrery/3d_view.html')
 
 
@@ -235,7 +257,7 @@ def fetch_orbital_data(request):
 
 
 def signup(request):
-    """Handles user signup with email."""
+    """Handles user signup, including email registration."""
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)  # Using the custom form with email
         if form.is_valid():
@@ -251,6 +273,6 @@ def signup(request):
 
 @login_required
 def nasa_data_logs(request):
-    """View to display the NASA data logs."""
+    """Displays the NASA data logs."""
     logs = NasaDataLog.objects.all().order_by('-timestamp')
     return render(request, 'orrery/nasa_data_logs.html', {'logs': logs})

@@ -27,22 +27,18 @@
                 </button>
             </form>
 
-            <!-- Logout Form -->
+            <!-- Get Close Approaches Now -->
+            <form action="{% url 'get_close_approaches_now' %}" method="POST" style="margin-top: 10px;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-info">Get Close Approaches Alert Now!</button>
+            </form>
+
+                    <!-- Logout Form -->
             <form action="{% url 'logout' %}" method="POST" style="margin-top: 10px;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Logout</button>
             </form>
 
-            <!-- New Features: Update NASA Data and Get Close Approaches Now -->
-            <form action="{% url 'update_nasa_data' %}" method="POST" style="margin-top: 10px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-warning">Update NASA Data</button>
-            </form>
-
-            <form action="{% url 'get_close_approaches_now' %}" method="POST" style="margin-top: 10px;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-info">Get Close Approaches Alert Now!</button>
-            </form>
         {% endif %}
     </div>
 

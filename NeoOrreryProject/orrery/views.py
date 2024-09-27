@@ -7,7 +7,6 @@ from django.contrib.auth import login
 from django.contrib import messages
 from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog
 from .forms import EditProfileForm, UserProfileForm
-from .management.commands.fetch_nasa_data import Command as FetchNASADataCommand
 from .management.commands.check_close_approaches import Command as CloseApproachesCommand
 
 
@@ -152,22 +151,6 @@ def toggle_alert_subscription(request):
         messages.success(request, 'You have opted out of Close Approaches Alert.')
 
     return redirect('dashboard')
-
-
-@login_required
-def update_nasa_data(request):
-    """Allows users to manually update NASA data."""
-    if request.method == 'POST':
-        fetch_nasa_data = FetchNASADataCommand()
-        fetch_nasa_data.handle()
-
-        # Log this action
-        NasaDataLog.objects.create(user=request.user, action='Updated NASA data')
-
-        messages.success(request, 'NASA data updated successfully!')
-        return redirect('dashboard')
-    else:
-        return HttpResponseNotAllowed(['POST'])
 
 
 @login_required

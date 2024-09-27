@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from celery.schedules import crontab
 
 # Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,7 +14,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 # Hosts allowed to access the project
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
-# Installed apps, including the orrery app
+# Installed apps, including Celery, Celery Beat, and the orrery app
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,7 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'orrery',  # Your app
+    'orrery',
+    'django_celery_beat',  # Celery Beat for periodic tasks
 ]
 
 # Middleware configuration
@@ -121,3 +123,26 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as a message broker
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers.DatabaseScheduler'
+
+# Celery Task Results Backend (optional, if you need to track task results)
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+# Timezone for Celery
+CELERY_TIMEZONE = 'UTC'
+
+# Celery task serializer
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Celery task to execute every 6 hours
+CELERY_BEAT_SCHEDULE = {
+    'fetch-nasa-data-every-6-hours': {
+        'task': 'orrery.tasks.fetch_nasa_data_task',
+        'schedule': crontab(minute=0, hour='*/6'),  # Run every 6 hours
+    },
+}

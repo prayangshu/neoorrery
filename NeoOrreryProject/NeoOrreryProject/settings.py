@@ -139,11 +139,15 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_RESULT_SERIALIZER = 'json'
 
-# Celery task to execute every 6 hours
+# Celery beat schedule
 CELERY_BEAT_SCHEDULE = {
     'fetch-nasa-data-every-6-hours': {
         'task': 'orrery.tasks.fetch_nasa_data_task',
         'schedule': crontab(minute=0, hour='*/6'),  # Run every 6 hours
+    },
+    'update-real-time-close-approaches-every-30-minutes': {
+        'task': 'orrery.tasks.update_real_time_close_approaches',
+        'schedule': crontab(minute='*/30'),  # Run every 30 minutes
     },
 }
 

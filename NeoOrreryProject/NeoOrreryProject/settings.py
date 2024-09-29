@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-7vb%lb!y@9gdtc6cm#&!0fpq%z
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 # Hosts allowed to access the project
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost', 'neoorrery-13c972087676.herokuapp.com').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # Installed apps, including Celery, Celery Beat, and the orrery app
 INSTALLED_APPS = [

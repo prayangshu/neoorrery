@@ -1,1 +1,1 @@
-web: cd NeoOrreryProject && gunicorn NeoOrreryProject.wsgi
+web: cd NeoOrreryProject && python manage.py collectstatic --noinput && gunicorn NeoOrreryProject.wsgi

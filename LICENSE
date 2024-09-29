@@ -1,70 +1,172 @@
+# NeoOrrery HOME
+
+Welcome to the **NeoOrrery** project wiki! This repository is a hub for documenting the roadmap, current status, and development practices of the NeoOrrery project.
+
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Project Roadmap](#project-roadmap)
+3. [Features](#features)
+4. [Usage](#usage)
+5. [Architecture](#architecture)
+6. [Contribution Guidelines](#contribution-guidelines)
+7. [Team Radiant](#team-radiant)
+8. [License](#license)
+
+---
+
+## Introduction
+
+**NeoOrrery** is a Django-based web application that fetches and visualizes real-time data about celestial bodies from NASA APIs. It provides users with insights on planets, comets, asteroids, and potentially hazardous objects (PHAs). The application allows users to opt in for alerts on close approaches of asteroids and provides a 3D visualization of the solar system.
+
+## Project Roadmap
+
+### Current Stage
+- **Version:** 1.0.0 (Beta)
+- **Last Updated:** September 30, 2024
+
+### Planned Features
+- Real-time close approaches display without email alerts.
+- Enhanced 3D visualization of celestial bodies using Three.js.
+- Admin and User dashboards for managing subscriptions, data, and profiles.
+
+### Milestones
+- **v1.0** (October 2024): Beta release with real-time data fetching, alerts, and 3D views.
+- **v2.0** (TBD): Integration of user-uploaded celestial body data and a fully interactive 3D orrery.
+
+---
+
+## Features
+
+### Dashboard
+- Displays statistics on celestial bodies (planets, comets, asteroids, PHAs).
+- Provides filters, search, and sorting functionality.
+
+### Close Approaches Alerts
+- Notifies users via email of any close approaches based on a predefined distance threshold.
+
+### 3D Visualization
+- Renders a 3D view of celestial bodies and their orbits using Three.js.
+
+### User Management
+- Profile editing, including profile pictures.
+- Email subscription management for alerts.
+
+### CSV Export
+- Download celestial body data as CSV files.
+
+---
+
+## Usage
+
+### Real-Time Alerts
+- The system will automatically notify subscribed users via email about close approaches of asteroids based on the set distance threshold.
+
+### 3D View
+- Access the interactive 3D visualization of the solar system from the dashboard.
+
+### Data Export
+- Download data on celestial bodies in CSV format from the data section.
+
+---
+
+## Architecture
+
+- **Backend:** Django
+  - Models for celestial bodies (planets, comets, asteroids).
+  - Views and management commands for data fetching and alerts.
+- **Frontend:** HTML, CSS, JavaScript (Three.js for 3D rendering).
+- **Database:** SQLite3
+- **APIs:** NASA APIs for celestial data
+- **Real-Time:** Celery for asynchronous tasks like data fetching and close approach alerts.
+- **Media Management:** User profile pictures and team member images.
+
+---
+
+## Contribution Guidelines
+
+We welcome contributions from the community! Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m 'Add some feature'`.
+4. Push to the branch: `git push origin feature-name`.
+5. Open a pull request.
+
+Ensure you have included relevant tests and documentation for new features.
+
+---
+
+## Team Radiant
+
+Meet the team behind NeoOrrery:
+
+- **Prayangshu Biswas** - Team Leader & Developer
+- **Kamolesh Gachi** - Concept Design & Video Editing
+- **Biplob Hasan Khan** - Frontend Developer
+- **Jannatul Bushra** - Lead Researcher & Designer of NeoOrrery
+- **Sharmin Sultana Lincoln** - Data & Analysis Oversight
+- **Abdus Sobhan** - Co-Researcher
+
+---
+
+## License
+
 # LICENSE
 
 **Copyright (C) 2024 Team Radiant**
 
 This license governs the use, distribution, and modification of the **NeoOrrery** software. By using, modifying, or distributing this project, you agree to the terms outlined below. Any violation of these terms may result in legal actions, including termination of rights under this license.
 
----
+### Permissions
 
-## Permissions
+1. **Commercial Use**  
+   - Commercial use of the software is **strictly prohibited** without explicit written permission from **Team Radiant**. Unauthorized commercial use will be subject to legal action, including possible copyright infringement claims.
 
-### 1. **Commercial Use**
-- Commercial use of the software is **strictly prohibited** without explicit written permission from **Team Radiant**. Unauthorized commercial use will be subject to legal action, including possible copyright infringement claims.
+2. **Modification**  
+   - The Licensee is permitted to modify the software for non-commercial purposes. Any modifications must retain the original license, and proper attribution must be given to **NeoOrrery** and **Team Radiant**.
 
-### 2. **Modification**
-- The Licensee is permitted to modify the software for non-commercial purposes. Any modifications must retain the original license, and proper attribution must be given to **NeoOrrery** and **Team Radiant**.
+3. **Distribution**  
+   - You are free to distribute copies of this software, provided the following conditions are met:
+     - A copy of this license is included with the distribution.
+     - Proper credit is given to **NeoOrrery** and **Team Radiant**.
 
-### 3. **Distribution**
-- You are free to distribute copies of this software, provided the following conditions are met:
-  - A copy of this license is included with the distribution.
-  - Proper credit is given to **NeoOrrery** and **Team Radiant**.
+4. **Patent Use**  
+   - This license does not grant you any rights or permissions to use any patents held by **Team Radiant** related to the software.
 
-### 4. **Patent Use**
-- This license does not grant you any rights or permissions to use any patents held by **Team Radiant** related to the software.
+5. **Private Use**  
+   - You are free to use this software for private, non-commercial purposes. Private users must still comply with the attribution requirements.
 
-### 5. **Private Use**
-- You are free to use this software for private, non-commercial purposes. Private users must still comply with the attribution requirements.
+### Limitations
 
----
+1. **Trademark Use**  
+   - This license does not grant permission to use the trademarks, service marks, or logos of **Team Radiant** or **NeoOrrery** for any purpose, unless explicitly authorized. Unauthorized use of the trademarks will be subject to legal consequences.
 
-## Limitations
+2. **Liability**  
+   - **Team Radiant** is not liable for any claims, damages, or other liabilities arising from the use of this software. You assume all risks associated with using the software, including potential issues in performance, security vulnerabilities, or data loss.
 
-### 1. **Trademark Use**
-- This license does not grant permission to use the trademarks, service marks, or logos of **Team Radiant** or **NeoOrrery** for any purpose, unless explicitly authorized. Unauthorized use of the trademarks will be subject to legal consequences.
+3. **Warranty**  
+   - This software is provided "as is" without any warranty of any kind, either expressed or implied. **Team Radiant** makes no representations about the suitability of this software for any purpose.
 
-### 2. **Liability**
-- **Team Radiant** is not liable for any claims, damages, or other liabilities arising from the use of this software. You assume all risks associated with using the software, including potential issues in performance, security vulnerabilities, or data loss.
-
-### 3. **Warranty**
-- This software is provided "as is" without any warranty of any kind, either expressed or implied. **Team Radiant** makes no representations about the suitability of this software for any purpose.
-
----
-
-## Unauthorized Commercial Use and Copyright Infringement
+### Unauthorized Commercial Use and Copyright Infringement
 
 - Any commercial use of this software **without explicit permission** from **Team Radiant** will be considered a violation of this license and may lead to **legal action**, including claims of copyright infringement.
 
 - Any reproduction, distribution, or modification of this software **without proper attribution** will also be considered a violation of this license. Projects that do not credit **NeoOrrery** and **Team Radiant** or fail to include this license in distributions will face legal actions, including potential copyright claims.
 
----
+### Summary of Terms
 
-## Summary of Terms
+- You are permitted to:
+  - Use, modify, and distribute this software for **non-commercial purposes** only.
+  - Create derivative works, provided that proper credit is given and this license is retained.
 
-You are permitted to:
-- Use, modify, and distribute this software for **non-commercial purposes** only.
-- Create derivative works, provided that proper credit is given and this license is retained.
+- You are **not permitted** to:
+  - Use this software for **commercial purposes** without explicit permission.
+  - Use **Team Radiant’s trademarks** without authorization.
+  - Omit proper credit when distributing or modifying the software.
 
-You are **not permitted** to:
-- Use this software for **commercial purposes** without explicit permission.
-- Use **Team Radiant’s trademarks** without authorization.
-- Omit proper credit when distributing or modifying the software.
-
-**Consequences of violation**:
+**Consequences of violation**:  
 - Unauthorized commercial use, or failure to provide proper credit, can lead to copyright infringement claims and legal action by **Team Radiant**.
 
----
-
-**Contact:**
-For commercial licensing, questions, or further permissions, please contact **Team Radiant** at:
-
+**Contact**:  
+For commercial licensing, questions, or further permissions, please contact **Team Radiant** at:  
 **teamradiantbangladesh@gmail.com**

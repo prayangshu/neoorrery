@@ -30,5 +30,4 @@ jobs:
 
       # Step 4: Build and push the Docker image using buildx with the current directory as context
       - name: Build and push Docker image
-        run: |
-          docker buildx build --push --tag ${{ secrets.DOCKER_USERNAME }}/neoorrery:latest .
+        run: docker buildx build --push --tag ${{ secrets.DOCKER_USERNAME }}/neoorrery:latest .

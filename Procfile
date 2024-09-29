@@ -1,1 +1,1 @@
-web: gunicorn NeoOrreryProject.wsgi
+web: cd NeoOrreryProject && gunicorn NeoOrreryProject.wsgi

@@ -12,6 +12,7 @@ cron-descriptor==1.4.5
 dj-database-url==2.2.0
 Django==5.1.1
 django-celery-beat==2.7.0
+django-heroku==0.3.1
 django-timezone-field==7.0
 gunicorn==23.0.0
 idna==3.10
@@ -19,6 +20,7 @@ kombu==5.4.2
 packaging==24.1
 pillow==10.4.0
 prompt_toolkit==3.0.48
+psycopg2==2.9.9
 python-crontab==3.2.0
 python-dateutil==2.9.0.post0
 redis==5.0.8

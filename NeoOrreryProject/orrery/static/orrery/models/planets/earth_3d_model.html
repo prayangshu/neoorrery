@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Set up scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting setup
+        const pointLight = new THREE.PointLight(0xffffff, 1.5, 100);
+        pointLight.position.set(5, 5, 5);
+        pointLight.castShadow = true;
+        scene.add(pointLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1.5); // Soft white light
+        scene.add(ambientLight);
+
+        // Earth geometry and material
+        const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
+
+        const specularColor = new THREE.Color(0x7DC7F2);
+        const shadowColor = new THREE.Color(0x6EB1D7);
+        const earthMaterial = new THREE.MeshPhongMaterial({
+            color: 0x629CBA,  // Ocean color
+            specular: specularColor,
+            shininess: 10,
+            emissive: shadowColor
+        });
+
+        const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+        earth.receiveShadow = true;
+        earth.castShadow = true;
+        scene.add(earth);
+
+        // Function to draw landmasses on canvas
+        function createLandmassTexture() {
+            const landmassCanvas = document.createElement('canvas');
+            landmassCanvas.width = 1024;
+            landmassCanvas.height = 512;
+            const context = landmassCanvas.getContext('2d');
+
+            // Fill with ocean color
+            context.fillStyle = '#629CBA';
+            context.fillRect(0, 0, landmassCanvas.width, landmassCanvas.height);
+
+            context.fillStyle = '#538C41'; // Landmass color
+
+            // Function to draw individual landmasses (North America, South America, etc.)
+            function drawLandmasses() {
+                // North America
+                context.beginPath();
+                context.moveTo(250, 200); context.lineTo(330, 240); context.lineTo(320, 300); context.lineTo(260, 350); context.lineTo(200, 320); context.lineTo(210, 260);
+                context.closePath(); context.fill();
+
+                // South America
+                context.beginPath(); context.moveTo(240, 370); context.lineTo(260, 400); context.lineTo(250, 460); context.lineTo(210, 470); context.lineTo(200, 420); context.lineTo(220, 390);
+                context.closePath(); context.fill();
+
+                // Africa, Europe, Asia, Australia, and Antarctica can follow the same structure
+            }
+            drawLandmasses();
+
+            return new THREE.CanvasTexture(landmassCanvas);
+        }
+
+        const landmassTexture = createLandmassTexture();
+        const landmassMaterial = new THREE.MeshPhongMaterial({
+            map: landmassTexture,
+            bumpMap: landmassTexture,
+            bumpScale: 0.05,
+            specular: specularColor,
+            shininess: 5,
+        });
+
+        const landmass = new THREE.Mesh(earthGeometry, landmassMaterial);
+        scene.add(landmass);
+
+        // Clouds setup
+        const cloudGeometry = new THREE.SphereGeometry(1.02, 64, 64);
+        const cloudMaterial = new THREE.MeshPhongMaterial({
+            map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/turban/webgl-earth/master/images/fair_clouds_4k.png'),
+            transparent: true,
+            opacity: 0.4,
+        });
+        const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+        scene.add(clouds);
+
+        // Atmosphere setup
+        const atmosphereGeometry = new THREE.SphereGeometry(1.03, 64, 64);
+        const atmosphereMaterial = new THREE.MeshBasicMaterial({
+            color: 0x87CEEB,
+            side: THREE.BackSide,
+            transparent: true,
+            opacity: 0.2,
+        });
+        const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+        scene.add(atmosphere);
+
+        // Camera position
+        camera.position.z = 3;
+
+        // Render loop and animation
+        function animate() {
+            requestAnimationFrame(animate);
+            earth.rotation.y += 0.002;
+            landmass.rotation.y += 0.002;
+            clouds.rotation.y += 0.0015;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resizing
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+    </script>
+</body>
+</html>

@@ -1,18 +1,35 @@
 {% extends 'orrery/base.html' %}
 
+{% load static %} <!-- Ensure static files are loaded -->
+
 {% block title %}Planet Detail - {{ body.name }}{% endblock %}
 
 {% block content %}
     <div class="detail-container">
-        <h2>Planet: {{ body.name }}</h2>
-        <p><strong>Size:</strong> {{ body.size|default:"N/A" }} meters</p>
-        <p><strong>Distance from Earth:</strong> {{ body.distance|default:"N/A" }} km</p>
-        <p><strong>Semi-Major Axis:</strong> {{ body.semi_major_axis|default:"N/A" }} AU</p>
-        <p><strong>Eccentricity:</strong> {{ body.eccentricity|default:"N/A" }}</p>
-        <p><strong>Inclination:</strong> {{ body.inclination|default:"N/A" }} degrees</p>
-        <p><strong>Argument of Periapsis:</strong> {{ body.argument_of_periapsis|default:"N/A" }} degrees</p>
-        <p><strong>Longitude of Ascending Node:</strong> {{ body.longitude_of_ascending_node|default:"N/A" }} degrees</p>
-        <p><strong>Mean Anomaly:</strong> {{ body.mean_anomaly|default:"N/A" }} degrees</p>
-        <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+        <!-- Left Box for Planet Information -->
+        <div style="width: 48%; float: left; padding-right: 20px;">
+            <h2>Planet: {{ body.name }}</h2>
+            <p><strong>Size:</strong> {{ body.size|default:"N/A" }} meters</p>
+            <p><strong>Distance from Earth:</strong> {{ body.distance|default:"N/A" }} km</p>
+            <p><strong>Semi-Major Axis:</strong> {{ body.semi_major_axis|default:"N/A" }} AU</p>
+            <p><strong>Eccentricity:</strong> {{ body.eccentricity|default:"N/A" }}</p>
+            <p><strong>Inclination:</strong> {{ body.inclination|default:"N/A" }} degrees</p>
+            <p><strong>Argument of Periapsis:</strong> {{ body.argument_of_periapsis|default:"N/A" }} degrees</p>
+            <p><strong>Longitude of Ascending Node:</strong> {{ body.longitude_of_ascending_node|default:"N/A" }} degrees</p>
+            <p><strong>Mean Anomaly:</strong> {{ body.mean_anomaly|default:"N/A" }} degrees</p>
+            <p><strong>Last Updated:</strong> {{ body.last_updated|date:"Y-m-d" }}</p>
+        </div>
+
+        <!-- Right Box for 3D Model or Placeholder -->
+        <div style="width: 48%; float: left; text-align: center;">
+            {% if body.name == 'Earth' %}
+                <iframe src="{% static 'orrery/models/planets/earth_3d_model.html' %}" style="width: 100%; height: 500px; border: none;"></iframe>
+            {% else %}
+                <p>3D model is not ready yet. We're working on it!</p>
+            {% endif %}
+        </div>
+
+        <!-- Clear floats -->
+        <div style="clear: both;"></div>
     </div>
 {% endblock %}

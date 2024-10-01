@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile
+from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, BlogPost, Topic
 
 # Admin configuration for Planet
 class PlanetAdmin(admin.ModelAdmin):
@@ -60,10 +60,27 @@ class CelestialBodyStatsAdmin(admin.ModelAdmin):
 
 # Admin configuration for UserProfile
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'is_opted_in', 'real_time_distance', 'critical_distance')
+    list_display = ('user', 'is_opted_in', 'real_time_distance', 'critical_distance', 'points')
     search_fields = ('user__username', 'user__email')
     list_filter = ('is_opted_in',)
     readonly_fields = ('user',)
+
+# Admin configuration for Topic
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+# Admin configuration for BlogPost
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('author', 'topic', 'status', 'time_of_submission')
+    search_fields = ('author__username', 'topic__name', 'content')
+    list_filter = ('status', 'topic')
+    readonly_fields = ('time_of_submission',)
+    fieldsets = (
+        ('General Information', {
+            'fields': ('author', 'topic', 'content', 'time_of_submission', 'status')
+        }),
+    )
 
 # Registering the models in the admin panel
 admin.site.register(Planet, PlanetAdmin)
@@ -71,3 +88,5 @@ admin.site.register(Comet, CometAdmin)
 admin.site.register(Asteroid, AsteroidAdmin)
 admin.site.register(CelestialBodyStats, CelestialBodyStatsAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(Topic, TopicAdmin)
+admin.site.register(BlogPost, BlogPostAdmin)

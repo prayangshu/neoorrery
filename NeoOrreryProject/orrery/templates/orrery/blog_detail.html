@@ -1,0 +1,40 @@
+<!-- templates/orrery/blog_detail.html -->
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+<div class="contribution-detail">
+    <h2>{{ blog_post.topic.name }}</h2>
+    <p class="status {{ blog_post.status|lower }}">{{ blog_post.status }}</p>
+
+    {% if blog_post.thumbnail %}
+        <img src="{{ blog_post.thumbnail.url }}" alt="Thumbnail" class="thumbnail" />
+    {% endif %}
+
+    <p>{{ blog_post.content }}</p>
+    <p><strong>Submitted by:</strong> {{ blog_post.author.username }}</p>
+    <p><strong>Submitted on:</strong> {{ blog_post.time_of_submission|date:"F j, Y, g:i a" }}</p>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h3>Comments</h3>
+        {% for comment in blog_post.comments.all %}
+            <div class="comment">
+                <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
+                <p><small>{{ comment.time_of_submission|date:"F j, Y, g:i a" }}</small></p>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Add Comment Form -->
+    <div class="add-comment">
+        <h3>Add a Comment</h3>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Write your comment here..." required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

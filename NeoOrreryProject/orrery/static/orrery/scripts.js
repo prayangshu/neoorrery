@@ -1,8 +1,8 @@
 // Fetching values from hidden elements in the HTML
-const totalPlanets = parseFloat(document.getElementById('totalPlanets').textContent);
-const totalAsteroids = parseFloat(document.getElementById('totalAsteroids').textContent);
-const totalPHA = parseFloat(document.getElementById('totalPHA').textContent);
-const totalComets = parseFloat(document.getElementById('totalComets').textContent);
+const totalPlanets = parseFloat(document.getElementById('totalPlanets').textContent) || 0;
+const totalAsteroids = parseFloat(document.getElementById('totalAsteroids').textContent) || 0;
+const totalPHA = parseFloat(document.getElementById('totalPHA').textContent) || 0;
+const totalComets = parseFloat(document.getElementById('totalComets').textContent) || 0;
 
 // Calculating the total number of celestial bodies
 const totalBodies = totalPlanets + totalAsteroids + totalPHA + totalComets;
@@ -23,7 +23,6 @@ function getResponsiveSize() {
 // Create and update the chart based on screen size
 function createPieChart() {
     const chartSize = getResponsiveSize();
-
     const ctx = document.getElementById('celestial-body-chart').getContext('2d');
 
     return new Chart(ctx, {
@@ -111,4 +110,66 @@ if (footerYearElement) {
     footerYearElement.textContent = new Date().getFullYear();
 } else {
     console.warn('Footer year element not found.');
+}
+
+// Handle blog contribution form submission
+const blogForm = document.getElementById('blogPostForm');
+if (blogForm) {
+    blogForm.addEventListener('submit', function (event) {
+        event.preventDefault();  // Prevent default form submission
+        const formData = new FormData(blogForm);
+
+        fetch(blogForm.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),  // CSRF token for security
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                messages.success('Your blog post has been submitted!');
+                window.location.href = data.redirect;  // Redirect to all contributions page
+            } else {
+                messages.error('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+}
+
+// Function to get CSRF token from cookies (for AJAX requests)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if this cookie string begins with the name we want
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Search functionality for contributions
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.toLowerCase();
+        const contributionCards = document.querySelectorAll('.contribution-card');
+
+        contributionCards.forEach(card => {
+            const title = card.querySelector('h4').textContent.toLowerCase();
+            if (title.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
 }

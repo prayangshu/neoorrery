@@ -4,11 +4,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
-from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog, RealTimeCloseApproach
-from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm
+from .models import Planet, Comet, Asteroid, CelestialBodyStats, UserProfile, NasaDataLog, RealTimeCloseApproach, BlogPost, Topic, Comment
+from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm, BlogPostForm, CommentForm
 from .management.commands.email_close_approaches import Command as EmailCloseApproachesCommand
 from .management.commands.fetch_real_time_close_approaches import Command as FetchRealTimeCloseApproachesCommand
-
 
 @login_required
 def dashboard(request):
@@ -105,13 +104,11 @@ def dashboard(request):
 
     return render(request, 'orrery/dashboard.html', context)
 
-
 @login_required
 def profile(request):
     """View displaying the user's profile information."""
     user_profile = UserProfile.objects.get(user=request.user)
     return render(request, 'orrery/profile.html', {'user_profile': user_profile})
-
 
 @login_required
 def edit_profile(request):
@@ -131,7 +128,6 @@ def edit_profile(request):
 
     return render(request, 'orrery/edit_profile.html', {'form': form, 'profile_form': profile_form})
 
-
 def body_detail(request, pk, body_type):
     """Displays detailed information about a celestial body."""
     if body_type == 'Planet':
@@ -148,7 +144,6 @@ def body_detail(request, pk, body_type):
 
     return render(request, template, {'body': body})
 
-
 @login_required
 def toggle_alert_subscription(request):
     """Toggles the user's subscription to close approach alerts."""
@@ -162,7 +157,6 @@ def toggle_alert_subscription(request):
         messages.success(request, 'You have opted out of Close Approaches Alert.')
 
     return redirect('dashboard')
-
 
 @login_required
 def email_close_approaches(request):
@@ -179,7 +173,6 @@ def email_close_approaches(request):
     else:
         return HttpResponseNotAllowed(['POST'])
 
-
 @login_required
 def fetch_real_time_close_approaches(request):
     """Allows users to fetch real-time close approaches."""
@@ -194,7 +187,6 @@ def fetch_real_time_close_approaches(request):
         return redirect('dashboard')
     else:
         return HttpResponseNotAllowed(['POST'])
-
 
 def export_bodies_csv(request):
     """Exports celestial bodies data to CSV."""
@@ -220,11 +212,9 @@ def export_bodies_csv(request):
 
     return response
 
-
 def three_d_view(request):
     """Renders the 3D view of celestial bodies."""
     return render(request, 'orrery/3d_view.html')
-
 
 def fetch_orbital_data(request):
     """Fetches and returns orbital data for celestial bodies."""
@@ -261,7 +251,6 @@ def fetch_orbital_data(request):
 
     return JsonResponse({'orbital_data': orbital_data})
 
-
 def signup(request):
     """Handles user signup, including email registration."""
     if request.method == 'POST':
@@ -276,9 +265,74 @@ def signup(request):
 
     return render(request, 'orrery/signup.html', {'form': form})
 
-
 @login_required
 def nasa_data_logs(request):
     """Displays the NASA data logs."""
     logs = NasaDataLog.objects.all().order_by('-timestamp')
     return render(request, 'orrery/nasa_data_logs.html', {'logs': logs})
+
+# Blog Contribution Views
+@login_required
+def contribute(request):
+    """Allows users to contribute a blog post."""
+    topics = Topic.objects.all()  # Fetch topics for the form
+    if request.method == 'POST':
+        form = BlogPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.status = 'NOT VERIFIED'  # Set the status to NOT VERIFIED by default
+            post.save()
+            messages.success(request, 'Your blog post has been submitted!')
+            return redirect('all_contributions')
+    else:
+        form = BlogPostForm()
+
+    return render(request, 'orrery/contribute.html', {'form': form, 'topics': topics})
+
+@login_required
+def all_contributions(request):
+    """Displays all contributions made by users."""
+    search_query = request.GET.get('search_query', '')
+    contributions = BlogPost.objects.all()
+
+    if search_query:
+        contributions = contributions.filter(topic__name__icontains=search_query)  # Search by topic name
+
+    return render(request, 'orrery/all_contributions.html', {'contributions': contributions})
+
+@login_required
+def verified_contributions(request):
+    """Displays all verified contributions."""
+    contributions = BlogPost.objects.filter(status='VERIFIED')[:20]
+    return render(request, 'orrery/verified_contributions.html', {'contributions': contributions})
+
+@login_required
+def not_verified_contributions(request):
+    """Displays all not verified contributions."""
+    contributions = BlogPost.objects.filter(status='NOT VERIFIED')[:20]
+    return render(request, 'orrery/not_verified_contributions.html', {'contributions': contributions})
+
+@login_required
+def blog_detail(request, pk):
+    """Displays a detailed view of a specific blog post and allows comments."""
+    blog_post = get_object_or_404(BlogPost, pk=pk)
+    comments = blog_post.comments.all()
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.blog_post = blog_post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Your comment has been added!')
+            return redirect('blog_detail', pk=pk)
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'orrery/blog_detail.html', {
+        'blog_post': blog_post,
+        'comments': comments,
+        'comment_form': comment_form,
+    })

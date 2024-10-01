@@ -42,6 +42,10 @@
                 <li><a href="{% url 'export_bodies_csv' %}" class="export-button">Export CSV</a></li>
                 <li><a href="{% url 'profile' %}" class="profile-button">Profile</a></li>
                 <li><a href="{% url 'nasa_data_logs' %}" class="log-button">NASA Data Logs</a></li>
+                <li><a href="{% url 'contribute' %}" class="contribute-button">Contribute</a></li>  <!-- New link for contributing -->
+                <li><a href="{% url 'all_contributions' %}" class="all-contributions-button">All Contributions</a></li>  <!-- New link for all contributions -->
+                <li><a href="{% url 'verified_contributions' %}" class="verified-contributions-button">Verified Contributions</a></li>  <!-- New link for verified contributions -->
+                <li><a href="{% url 'not_verified_contributions' %}" class="not-verified-contributions-button">Not Verified Contributions</a></li>  <!-- New link for not verified contributions -->
             {% endif %}
         </ul>
     </div>

@@ -1,0 +1,28 @@
+<!-- templates/orrery/not_verified_contributions.html -->
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+<div class="contributions-container">
+    <h2>Not Verified Contributions</h2>
+
+    <div class="contributions-grid">
+        {% for contribution in contributions %}
+        <div class="contribution-tile">
+            <!-- Display status badge -->
+            <div class="status-badge not-verified">
+                {{ contribution.status }}
+            </div>
+            <a href="{% url 'blog_detail' contribution.pk %}">
+                {% if contribution.thumbnail %}
+                    <img src="{{ contribution.thumbnail.url }}" alt="Thumbnail" class="thumbnail" />
+                {% endif %}
+                <h4>{{ contribution.topic.name }}</h4>
+                <p><strong>Submitted by:</strong> {{ contribution.author.username }}</p>
+            </a>
+        </div>
+        {% empty %}
+        <p>No not verified contributions found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

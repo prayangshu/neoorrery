@@ -1,0 +1,19 @@
+<!-- templates/orrery/blog_post_detail.html -->
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+<div class="detail-container">
+    <h2>{{ post.topic.name }}</h2>
+    <div class="badge {{ post.status|lower }}">{{ post.status }}</div>
+    {% if post.thumbnail %}
+    <img src="{{ post.thumbnail.url }}" alt="Thumbnail" class="thumbnail" />
+    {% endif %}
+    <p><strong>Author:</strong> {{ post.author.username }}</p>
+    <p><strong>Submitted on:</strong> {{ post.time_of_submission|date:"F j, Y, g:i a" }}</p>
+    <div>
+        <h3>Content:</h3>
+        <p>{{ post.content }}</p>
+    </div>
+    <!-- Comments section could go here -->
+</div>
+{% endblock %}

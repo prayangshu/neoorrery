@@ -1,9 +1,9 @@
 from django import forms
-from .models import Planet, Comet, Asteroid, UserProfile
+from .models import Planet, Comet, Asteroid, UserProfile, BlogPost, Topic, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-
+# Form for Planet
 class PlanetForm(forms.ModelForm):
     class Meta:
         model = Planet
@@ -30,7 +30,7 @@ class PlanetForm(forms.ModelForm):
             'mean_anomaly': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
         }
 
-
+# Form for Comet
 class CometForm(forms.ModelForm):
     class Meta:
         model = Comet
@@ -53,7 +53,7 @@ class CometForm(forms.ModelForm):
             'longitude_of_ascending_node': forms.NumberInput(attrs={'readonly': 'readonly', 'placeholder': 'Degrees'}),
         }
 
-
+# Form for Asteroid
 class AsteroidForm(forms.ModelForm):
     class Meta:
         model = Asteroid
@@ -70,13 +70,13 @@ class AsteroidForm(forms.ModelForm):
             'is_potentially_hazardous': forms.CheckboxInput(attrs={'disabled': 'disabled'}),
         }
 
-
+# Form for editing user profile
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
 
-
+# Form for UserProfile
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
@@ -91,6 +91,24 @@ class UserProfileForm(forms.ModelForm):
             'critical_distance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '10,000'}),
         }
 
+# Form for blog post contributions
+class BlogPostForm(forms.ModelForm):
+    class Meta:
+        model = BlogPost
+        fields = ['topic', 'content', 'thumbnail']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your blog content here...'}),
+            'thumbnail': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+# Form for adding comments to blog posts
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your comment here...'}),
+        }
 
 # Custom UserCreationForm for Signup with Email
 class CustomUserCreationForm(UserCreationForm):

@@ -1,0 +1,32 @@
+<!-- templates/orrery/contribute.html -->
+{% extends 'orrery/base.html' %}
+
+{% block content %}
+<div class="contribute-blog-container">
+    <h2>Contribute a Blog Post</h2>
+    <form method="POST" enctype="multipart/form-data"> <!-- Added enctype for file upload -->
+        {% csrf_token %}
+
+        <label for="topic">Select Topic:</label>
+        <select name="topic" id="topic" class="form-control" required>
+            <option value="">-- Select a Topic --</option>
+            {% for topic in topics %}
+            <option value="{{ topic.id }}">{{ topic.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="thumbnail">Upload Thumbnail:</label>
+        <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/*" required />
+
+        <label for="content">Blog Content:</label>
+        <textarea name="content" id="content" class="form-control" rows="10" required placeholder="Write your blog content here..."></textarea>
+
+        <button type="submit" class="btn">Submit</button>
+    </form>
+
+    <!-- Add a link to view all contributions -->
+    <div class="view-contributions-link">
+        <p>Want to see what others have contributed? <a href="{% url 'all_contributions' %}">View All Contributions</a></p>
+    </div>
+</div>
+{% endblock %}

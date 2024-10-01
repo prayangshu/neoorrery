@@ -19,7 +19,6 @@ class PlanetAdmin(admin.ModelAdmin):
         }),
     )
 
-
 # Admin configuration for Comet
 class CometAdmin(admin.ModelAdmin):
     list_display = ('name', 'distance', 'orbital_period', 'eccentricity', 'last_updated')
@@ -38,7 +37,6 @@ class CometAdmin(admin.ModelAdmin):
         }),
     )
 
-
 # Admin configuration for Asteroid
 class AsteroidAdmin(admin.ModelAdmin):
     list_display = ('name', 'size', 'distance', 'is_potentially_hazardous', 'last_updated')
@@ -54,20 +52,18 @@ class AsteroidAdmin(admin.ModelAdmin):
         }),
     )
 
-
 # Admin configuration for CelestialBodyStats
 class CelestialBodyStatsAdmin(admin.ModelAdmin):
     list_display = ('timestamp', 'total_bodies', 'total_planets', 'total_comets', 'total_asteroids', 'total_pha')
     readonly_fields = ('timestamp',)
     list_filter = ('timestamp',)
 
-
 # Admin configuration for UserProfile
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'is_opted_in')
+    list_display = ('user', 'is_opted_in', 'real_time_distance', 'critical_distance')
     search_fields = ('user__username', 'user__email')
     list_filter = ('is_opted_in',)
-
+    readonly_fields = ('user',)
 
 # Registering the models in the admin panel
 admin.site.register(Planet, PlanetAdmin)

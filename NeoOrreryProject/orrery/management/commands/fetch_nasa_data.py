@@ -65,7 +65,7 @@ class Command(BaseCommand):
             {'name': 'Venus', 'size': 12104, 'distance': 108200000, 'nasa_id': 'venus',
              'semi_major_axis': 0.723, 'eccentricity': 0.0067, 'inclination': 3.3946,
              'argument_of_periapsis': 54.852, 'longitude_of_ascending_node': 76.680, 'mean_anomaly': 50.115},
-            # Add other planets...
+            # Add other planets here...
         ]
 
         for planet in planets:
@@ -110,7 +110,7 @@ class Command(BaseCommand):
                 distance = None
                 if perihelion_distance:
                     try:
-                        distance = float(perihelion_distance) * 149597870.7
+                        distance = float(perihelion_distance) * 149597870.7  # Convert AU to kilometers
                     except (TypeError, ValueError):
                         self.stdout.write(self.style.ERROR(f"Invalid perihelion distance for comet {name}"))
 

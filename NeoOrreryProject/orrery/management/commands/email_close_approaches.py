@@ -1,10 +1,7 @@
-import smtplib
-import ssl
 from django.core.management.base import BaseCommand
-from django.core.mail import send_mail, EmailMessage
-from django.conf import settings
 from orrery.models import UserProfile
 from orrery.utils.nasa_data import fetch_close_approaches
+from django.core.mail import send_mail
 from datetime import datetime
 
 
@@ -13,60 +10,49 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.stdout.write('Checking for close approaches and sending email alerts...')
-        threshold_distance = 100000  # 100,000 km
-        close_notify_distance = 10000  # 10,000 km
 
-        # Get users who opted in
+        # Fetch users who have opted into alerts
         opted_in_users = UserProfile.objects.filter(is_opted_in=True).select_related('user')
 
         if not opted_in_users.exists():
             self.stdout.write(self.style.WARNING('No users opted-in for close approach alerts.'))
             return
 
-        email_list = [profile.user.email for profile in opted_in_users]
-
         try:
-            close_approaches, critical_approaches = fetch_close_approaches()
+            # Fetch close approaches data
+            close_approaches_data, _ = fetch_close_approaches()
 
-            if close_approaches:
-                subject = f"NeoOrrery Close Approaches Alert {datetime.now().strftime('%d %B %Y')}"
-                message = "The following celestial bodies are approaching Earth within a close range:\n\n"
-                critical_approach = False
+            # Loop through each user and send personalized email
+            for profile in opted_in_users:
+                user_email = profile.user.email
+                user_real_time_distance = profile.real_time_distance
+                user_critical_distance = profile.critical_distance
 
-                for body in close_approaches:
-                    message += f"- {body['name']}: {body['distance']} km from Earth\n"
-                    if body['is_critical']:
-                        critical_approach = True
+                user_close_approaches = []
+                critical_alert = False
 
-                if critical_approach:
-                    message += "\n⚠️ **Critical Alert**: Some celestial bodies are within 10,000 km of Earth. Immediate attention required!\n"
-            else:
-                subject = f"No Close Approaches Detected on {datetime.now().strftime('%d %B %Y')}"
-                message = "No celestial bodies are approaching Earth within the critical range of 100,000 km.\n"
+                # Check which close approaches match the user's set distance preferences
+                for body in close_approaches_data:
+                    distance = body['distance']
+                    if distance <= user_real_time_distance:
+                        user_close_approaches.append(body)
+                    if distance <= user_critical_distance:
+                        critical_alert = True
 
-            # Send email with SSL certificate verification disabled
-            self.send_email_with_ssl_override(subject, message, email_list)
+                # If any close approaches match, send an email alert
+                if user_close_approaches:
+                    subject = f"NeoOrrery Close Approaches Alert {datetime.now().strftime('%d %B %Y')}"
+                    message = "The following celestial bodies are approaching Earth within your set ranges:\n\n"
+                    for body in user_close_approaches:
+                        message += f"- {body['name']}: {body['distance']} km from Earth\n"
 
-            self.stdout.write(self.style.SUCCESS(
-                f'Successfully fetched {len(close_approaches)} close approaches. '
-                f'{len(critical_approaches)} critical approaches recorded and sent to {len(email_list)} users.'
-            ))
-        except Exception as e:
-            self.stdout.write(self.style.ERROR(str(e)))
+                    if critical_alert:
+                        message += "\n⚠️ **Critical Alert**: Some celestial bodies are within your critical range. Immediate attention required!\n"
 
-    def send_email_with_ssl_override(self, subject, message, email_list):
-        """Send an email bypassing SSL verification."""
-        try:
-            context = ssl._create_unverified_context()
+                    # Send the email to the user
+                    send_mail(subject, message, 'no-reply@neoorrery.space', [user_email])
 
-            # Create a message object
-            msg = EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, email_list)
-            msg.content_subtype = 'plain'  # Set content as plain text
-
-            # Connect to the SMTP server with SSL
-            with smtplib.SMTP_SSL(settings.EMAIL_HOST, settings.EMAIL_PORT, context=context) as server:
-                server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-                server.sendmail(msg.from_email, msg.to, msg.message().as_string())
+            self.stdout.write(self.style.SUCCESS('Email alerts sent successfully.'))
 
         except Exception as e:
-            raise Exception(f"Error sending email: {e}")
+            self.stdout.write(self.style.ERROR(f"Error: {e}"))

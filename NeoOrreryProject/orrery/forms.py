@@ -80,9 +80,15 @@ class EditProfileForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['profile_picture']
+        fields = ['profile_picture', 'real_time_distance', 'critical_distance']
+        labels = {
+            'real_time_distance': 'Set Real-Time Close Approaches Distance (KM)',
+            'critical_distance': 'Set Critical Close Approaches Distance (KM)',
+        }
         widgets = {
             'profile_picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'real_time_distance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '100,000'}),
+            'critical_distance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '10,000'}),
         }
 
 

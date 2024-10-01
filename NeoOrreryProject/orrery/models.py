@@ -6,9 +6,12 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to='profile_pictures/', default='default.jpg', null=True, blank=True)
     is_opted_in = models.BooleanField(default=False)  # Tracks whether the user has opted into alerts
+    real_time_distance = models.IntegerField(default=100000)  # Default: 100,000 km
+    critical_distance = models.IntegerField(default=10000)  # Default: 10,000 km
 
     def __str__(self):
         return f"{self.user.username}'s profile"
+
 
 class CelestialBody(models.Model):
     name = models.CharField(max_length=100)
@@ -28,6 +31,7 @@ class CelestialBody(models.Model):
         """Return the type of celestial body (to be overridden by subclasses)."""
         return "CelestialBody"
 
+
 class Planet(CelestialBody):
     semi_major_axis = models.FloatField(blank=True, null=True)  # in AU
     eccentricity = models.FloatField(blank=True, null=True)
@@ -42,6 +46,7 @@ class Planet(CelestialBody):
     def get_body_type(self):
         return "Planet"
 
+
 class Comet(CelestialBody):
     orbital_period = models.FloatField(blank=True, null=True)  # in years
     eccentricity = models.FloatField(blank=True, null=True)
@@ -55,6 +60,7 @@ class Comet(CelestialBody):
     def get_body_type(self):
         return "Comet"
 
+
 class Asteroid(CelestialBody):
     is_potentially_hazardous = models.BooleanField(default=False)
 
@@ -66,6 +72,7 @@ class Asteroid(CelestialBody):
 
     def get_body_type(self):
         return "PHA" if self.is_potentially_hazardous else "Asteroid"
+
 
 class CelestialBodyStats(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
@@ -98,6 +105,7 @@ class CelestialBodyStats(models.Model):
     def __str__(self):
         return f"Celestial Body Stats at {self.timestamp}"
 
+
 class NasaDataLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)  # Log what action was performed (e.g., "Updated NASA Data", "Requested Close Approaches Alert")
@@ -105,6 +113,7 @@ class NasaDataLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.action} at {self.timestamp}"
+
 
 class RealTimeCloseApproach(models.Model):
     name = models.CharField(max_length=255)

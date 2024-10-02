@@ -24,6 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'orrery',
     'django_celery_beat',
+<<<<<<< Updated upstream
+=======
+    'tinymce',  # Use TinyMCE
+>>>>>>> Stashed changes
 ]
 
 # Middleware configuration

@@ -9,6 +9,7 @@ from .forms import EditProfileForm, UserProfileForm, CustomUserCreationForm, Blo
 from .management.commands.email_close_approaches import Command as EmailCloseApproachesCommand
 from .management.commands.fetch_real_time_close_approaches import Command as FetchRealTimeCloseApproachesCommand
 
+
 @login_required
 def dashboard(request):
     """Dashboard view displaying celestial body statistics and real-time close approaches."""
@@ -16,7 +17,6 @@ def dashboard(request):
     total_comets = Comet.objects.count()
     total_asteroids = Asteroid.objects.count()
     total_pha = Asteroid.objects.filter(is_potentially_hazardous=True).count()
-
     total_celestial_bodies = total_planets + total_comets + total_asteroids
 
     latest_stats = CelestialBodyStats.objects.last()
@@ -104,11 +104,13 @@ def dashboard(request):
 
     return render(request, 'orrery/dashboard.html', context)
 
+
 @login_required
 def profile(request):
     """View displaying the user's profile information."""
     user_profile = UserProfile.objects.get(user=request.user)
     return render(request, 'orrery/profile.html', {'user_profile': user_profile})
+
 
 @login_required
 def edit_profile(request):
@@ -128,6 +130,7 @@ def edit_profile(request):
 
     return render(request, 'orrery/edit_profile.html', {'form': form, 'profile_form': profile_form})
 
+
 def body_detail(request, pk, body_type):
     """Displays detailed information about a celestial body."""
     if body_type == 'Planet':
@@ -144,6 +147,7 @@ def body_detail(request, pk, body_type):
 
     return render(request, template, {'body': body})
 
+
 @login_required
 def toggle_alert_subscription(request):
     """Toggles the user's subscription to close approach alerts."""
@@ -157,6 +161,7 @@ def toggle_alert_subscription(request):
         messages.success(request, 'You have opted out of Close Approaches Alert.')
 
     return redirect('dashboard')
+
 
 @login_required
 def email_close_approaches(request):
@@ -173,6 +178,7 @@ def email_close_approaches(request):
     else:
         return HttpResponseNotAllowed(['POST'])
 
+
 @login_required
 def fetch_real_time_close_approaches(request):
     """Allows users to fetch real-time close approaches."""
@@ -187,6 +193,7 @@ def fetch_real_time_close_approaches(request):
         return redirect('dashboard')
     else:
         return HttpResponseNotAllowed(['POST'])
+
 
 def export_bodies_csv(request):
     """Exports celestial bodies data to CSV."""
@@ -212,9 +219,11 @@ def export_bodies_csv(request):
 
     return response
 
+
 def three_d_view(request):
     """Renders the 3D view of celestial bodies."""
     return render(request, 'orrery/3d_view.html')
+
 
 def fetch_orbital_data(request):
     """Fetches and returns orbital data for celestial bodies."""
@@ -251,6 +260,7 @@ def fetch_orbital_data(request):
 
     return JsonResponse({'orbital_data': orbital_data})
 
+
 def signup(request):
     """Handles user signup, including email registration."""
     if request.method == 'POST':
@@ -265,11 +275,13 @@ def signup(request):
 
     return render(request, 'orrery/signup.html', {'form': form})
 
+
 @login_required
 def nasa_data_logs(request):
     """Displays the NASA data logs."""
     logs = NasaDataLog.objects.all().order_by('-timestamp')
     return render(request, 'orrery/nasa_data_logs.html', {'logs': logs})
+
 
 # Blog Contribution Views
 @login_required
@@ -283,12 +295,19 @@ def contribute(request):
             post.author = request.user
             post.status = 'NOT VERIFIED'  # Set the status to NOT VERIFIED by default
             post.save()
+
+            # Update points for non-verified contributions
+            user_profile = request.user.userprofile
+            user_profile.points += 25  # Add points for non-verified contribution
+            user_profile.save()
+
             messages.success(request, 'Your blog post has been submitted!')
             return redirect('all_contributions')
     else:
         form = BlogPostForm()
 
     return render(request, 'orrery/contribute.html', {'form': form, 'topics': topics})
+
 
 @login_required
 def all_contributions(request):
@@ -301,17 +320,40 @@ def all_contributions(request):
 
     return render(request, 'orrery/all_contributions.html', {'contributions': contributions})
 
+
 @login_required
 def verified_contributions(request):
     """Displays all verified contributions."""
     contributions = BlogPost.objects.filter(status='VERIFIED')[:20]
     return render(request, 'orrery/verified_contributions.html', {'contributions': contributions})
 
+
 @login_required
 def not_verified_contributions(request):
     """Displays all not verified contributions."""
     contributions = BlogPost.objects.filter(status='NOT VERIFIED')[:20]
     return render(request, 'orrery/not_verified_contributions.html', {'contributions': contributions})
+
+
+@login_required
+def my_contributions(request):
+    """Displays the user's contributions."""
+    contributions = BlogPost.objects.filter(author=request.user)  # Filter contributions by the logged-in user
+    return render(request, 'orrery/my_contributions.html', {'contributions': contributions})
+
+
+@login_required
+def delete_contribution(request, pk):
+    """Handles the deletion of a user's contribution."""
+    contribution = get_object_or_404(BlogPost, pk=pk)
+
+    if request.method == 'POST':
+        contribution.delete()
+        messages.success(request, 'Your contribution has been deleted successfully!')
+        return redirect('my_contributions')
+
+    return render(request, 'orrery/delete_contribution.html', {'contribution': contribution})
+
 
 @login_required
 def blog_detail(request, pk):

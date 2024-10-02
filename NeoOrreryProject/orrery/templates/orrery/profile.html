@@ -1,5 +1,7 @@
 {% extends 'orrery/base.html' %}
 
+{% load static %}  <!-- Add this line to load static files -->
+
 {% block title %}Profile - NeoOrrery{% endblock %}
 
 {% block content %}
@@ -11,7 +13,7 @@
             {% if user.userprofile.profile_picture %}
                 <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
             {% else %}
-                <img src="{{ STATIC_URL }}img/default.jpg" alt="Default Profile Picture" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                <img src="{% static 'orrery/img/default.jpg' %}" alt="Default Profile Picture" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
             {% endif %}
         </div>
 
@@ -31,6 +33,10 @@
                 <span class="badge bg-danger">Not Subscribed</span>
             {% endif %}
         </p>
+
+        <!-- Display Points and Rank -->
+        <p><strong>Your Points:</strong> {{ user.userprofile.points }}</p>
+        <p><strong>Your Rank:</strong> <span class="badge bg-info">{{ user.userprofile.get_rank }}</span></p>
 
         <!-- Link to toggle subscription -->
         <a href="{% url 'toggle_alert_subscription' %}" class="btn btn-warning mb-3">

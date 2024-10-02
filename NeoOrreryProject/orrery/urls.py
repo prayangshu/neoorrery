@@ -28,4 +28,8 @@ urlpatterns = [
     path('verified-contributions/', views.verified_contributions, name='verified_contributions'),  # List of verified contributions
     path('not-verified-contributions/', views.not_verified_contributions, name='not_verified_contributions'),  # List of not verified contributions
     path('blog/<int:pk>/', views.blog_detail, name='blog_detail'),  # Detailed view of a blog post
+
+    # My Contributions
+    path('my-contributions/', views.my_contributions, name='my_contributions'),  # User's contributions
 ]
+

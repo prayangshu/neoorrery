@@ -1,0 +1,22 @@
+{% extends 'orrery/base.html' %}
+
+{% block title %}My Contributions - NeoOrrery{% endblock %}
+
+{% block content %}
+<div class="contributions-container">
+    <h2>My Contributions</h2>
+
+    {% for contribution in contributions %}
+    <div class="contribution-card">
+        <img src="{{ contribution.thumbnail.url }}" alt="Contribution Thumbnail" class="contribution-thumbnail" style="max-width: 150px; max-height: 150px;">
+        <h4>{{ contribution.topic.name }}</h4>
+        <p><strong>Author:</strong> {{ contribution.author.username }}</p>
+        <p class="status {{ contribution.status|lower }}">{{ contribution.status }}</p>
+        <p>{{ contribution.content|truncatewords:20 }}</p>
+        <p><strong>Submitted on:</strong> {{ contribution.time_of_submission|date:"F j, Y, g:i a" }}</p>
+    </div>
+    {% empty %}
+    <p>No contributions found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -23,7 +23,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'orrery',
-    'django_celery_beat',  # Celery Beat for periodic tasks
+    'django_celery_beat',
+    'tinymce',  # Use TinyMCE
 ]
 
 # Middleware configuration
@@ -105,8 +106,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.hostinger.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'mail@prayangshu.com')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'PrayangshUUU73@XD')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'no-reply@neoorrery.space')  # Updated email
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'NASASPACE2024@neo')  # Updated password
 
 # Set default from email for sending
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

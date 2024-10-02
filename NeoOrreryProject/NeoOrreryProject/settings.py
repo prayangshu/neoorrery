@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'orrery',
     'django_celery_beat',
-    'tinymce',  # Use TinyMCE
 ]
 
 # Middleware configuration

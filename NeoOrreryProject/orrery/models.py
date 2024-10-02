@@ -57,14 +57,16 @@ class BlogPost(models.Model):
         ('VERIFIED', 'INFORMATION VERIFIED'),
     ]
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)  # Category selected by users
-    content = models.TextField()  # You can replace this with RichTextField for formatting
-    thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)  # Thumbnail field
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200, null=False, blank=False)  # Ensure this field is added
+    content = models.TextField()
+    thumbnail = models.ImageField(upload_to='thumbnails/', null=True, blank=True)
     time_of_submission = models.DateTimeField(default=timezone.now)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='NOT VERIFIED')
 
     def __str__(self):
-        return f'{self.author.username} - {self.topic.name}'
+        return f'{self.title} by {self.author.username} - {self.topic.name}'
+
 
 # Blog comment model
 class Comment(models.Model):

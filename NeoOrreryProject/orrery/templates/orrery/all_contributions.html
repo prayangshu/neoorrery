@@ -21,7 +21,7 @@
                 {% if contribution.thumbnail %}
                     <img src="{{ contribution.thumbnail.url }}" alt="Thumbnail" class="thumbnail" />
                 {% endif %}
-                <h4>{{ contribution.topic.name }}</h4>
+                <h4>{{ contribution.title }}</h4> <!-- Display the title here -->
                 <p><strong>Submitted by:</strong> {{ contribution.author.username }}</p>
                 <p><strong>Submitted on:</strong> {{ contribution.time_of_submission|date:"F j, Y, g:i a" }}</p>
             </a>

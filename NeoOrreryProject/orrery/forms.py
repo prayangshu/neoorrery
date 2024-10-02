@@ -95,9 +95,12 @@ class UserProfileForm(forms.ModelForm):
 class BlogPostForm(forms.ModelForm):
     class Meta:
         model = BlogPost
-        fields = ['topic', 'content', 'thumbnail']
+        fields = ['topic', 'title', 'content', 'thumbnail']
         widgets = {
-            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your blog content here...'}),
+            'title': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Enter blog title...', 'required': 'required'}),
+            'content': forms.Textarea(
+                attrs={'class': 'form-control', 'placeholder': 'Write your blog content here...'}),
             'thumbnail': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 

@@ -1,6 +1,6 @@
 {% extends 'orrery/base.html' %}
 
-{% load static %}  <!-- Add this line to load static files -->
+{% load static %}
 
 {% block title %}Profile - NeoOrrery{% endblock %}
 
@@ -8,46 +8,42 @@
     <div class="profile-page container mt-4">
         <h2>My Profile</h2>
 
-        <!-- Display the profile picture, use a default picture if none is uploaded -->
+        <!-- Profile Picture -->
         <div class="profile-picture mb-3">
             {% if user.userprofile.profile_picture %}
-                <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="img-thumbnail profile-pic">
             {% else %}
-                <img src="{% static 'orrery/img/default.jpg' %}" alt="Default Profile Picture" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                <img src="{% static 'orrery/img/default.jpg' %}" alt="Default Profile Picture" class="img-thumbnail profile-pic">
             {% endif %}
         </div>
 
-        <!-- Display user details -->
-        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
+        <!-- User Details -->
+        <div class="profile-details mb-4">
+            <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Real-Time Close Approaches Distance (KM):</strong> {{ user.userprofile.real_time_distance }}</p>
+            <p><strong>Critical Close Approaches Distance (KM):</strong> {{ user.userprofile.critical_distance }}</p>
+            <p><strong>Close Approaches Alert Subscription:</strong>
+                {% if user.userprofile.is_opted_in %}
+                    <span class="badge bg-success">Subscribed</span>
+                {% else %}
+                    <span class="badge bg-danger">Not Subscribed</span>
+                {% endif %}
+            </p>
+            <p><strong>Your Points:</strong> {{ user.userprofile.points }}</p>
+            <p><strong>Your Rank:</strong> <span class="badge bg-info">{{ user.userprofile.get_rank }}</span></p>
+        </div>
 
-        <!-- Display Real-Time and Critical Close Approaches Distance -->
-        <p><strong>Real-Time Close Approaches Distance (KM):</strong> {{ user.userprofile.real_time_distance }}</p>
-        <p><strong>Critical Close Approaches Distance (KM):</strong> {{ user.userprofile.critical_distance }}</p>
-
-        <!-- Subscription Status -->
-        <p><strong>Close Approaches Alert Subscription:</strong>
-            {% if user.userprofile.is_opted_in %}
-                <span class="badge bg-success">Subscribed</span>
-            {% else %}
-                <span class="badge bg-danger">Not Subscribed</span>
-            {% endif %}
-        </p>
-
-        <!-- Display Points and Rank -->
-        <p><strong>Your Points:</strong> {{ user.userprofile.points }}</p>
-        <p><strong>Your Rank:</strong> <span class="badge bg-info">{{ user.userprofile.get_rank }}</span></p>
-
-        <!-- Link to toggle subscription -->
-        <a href="{% url 'toggle_alert_subscription' %}" class="btn btn-warning mb-3">
-            {% if user.userprofile.is_opted_in %}
-                Unsubscribe from Alerts
-            {% else %}
-                Subscribe to Alerts
-            {% endif %}
-        </a>
-
-        <!-- Edit profile button -->
-        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+        <!-- Subscription & Edit Profile Buttons -->
+        <div class="profile-actions">
+            <a href="{% url 'toggle_alert_subscription' %}" class="btn btn-warning mb-3">
+                {% if user.userprofile.is_opted_in %}
+                    Unsubscribe from Alerts
+                {% else %}
+                    Subscribe to Alerts
+                {% endif %}
+            </a>
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+        </div>
     </div>
 {% endblock %}

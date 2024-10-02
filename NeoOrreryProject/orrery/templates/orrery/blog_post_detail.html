@@ -1,15 +1,20 @@
-<!-- templates/orrery/blog_post_detail.html -->
 {% extends 'orrery/base.html' %}
 
 {% block content %}
 <div class="detail-container">
-    <h2>{{ post.topic.name }}</h2>
+    <h2>{{ post.title }}</h2>
+    <h3>{{ post.topic.name }}</h3>
     <div class="badge {{ post.status|lower }}">{{ post.status }}</div>
+
     {% if post.thumbnail %}
-    <img src="{{ post.thumbnail.url }}" alt="Thumbnail" class="thumbnail" />
+    <div class="thumbnail-container" style="width: 760px; height: 210px; margin: 0 auto;"> <!-- Fixed size -->
+        <img src="{{ post.thumbnail.url }}" alt="Thumbnail" class="thumbnail" style="width: 100%; height: 100%; object-fit: cover;" />
+    </div>
     {% endif %}
+
     <p><strong>Author:</strong> {{ post.author.username }}</p>
     <p><strong>Submitted on:</strong> {{ post.time_of_submission|date:"F j, Y, g:i a" }}</p>
+
     <div>
         <h3>Content:</h3>
         <p>{{ post.content }}</p>

@@ -4,8 +4,11 @@
 {% block content %}
 <div class="contribute-blog-container">
     <h2>Contribute a Blog Post</h2>
-    <form method="POST" enctype="multipart/form-data"> <!-- Added enctype for file upload -->
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <label for="title">Blog Title:</label>
+        <input type="text" name="title" id="title" class="form-control" placeholder="Enter blog title (required)" required>
 
         <label for="topic">Select Topic:</label>
         <select name="topic" id="topic" class="form-control" required>
@@ -16,7 +19,7 @@
         </select>
 
         <label for="thumbnail">Upload Thumbnail:</label>
-        <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/*" required />
+        <input type="file" name="thumbnail" id="thumbnail" class="form-control" accept="image/*">
 
         <label for="content">Blog Content:</label>
         <textarea name="content" id="content" class="form-control" rows="10" required placeholder="Write your blog content here..."></textarea>
@@ -24,7 +27,6 @@
         <button type="submit" class="btn">Submit</button>
     </form>
 
-    <!-- Add a link to view all contributions -->
     <div class="view-contributions-link">
         <p>Want to see what others have contributed? <a href="{% url 'all_contributions' %}">View All Contributions</a></p>
     </div>

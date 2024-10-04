@@ -198,7 +198,7 @@ NeoOrrery is developed by Team Radiant, a group of passionate creators and devel
 - [Prayangshu Biswas Hritwick](https://github.com/prayangshuu) (Leader & Lead Developer)
 - [Kamolesh Gachi](https://github.com/kamoleshgachi) (Concept Designer & Developer, Video Editor)
 - [Biplob Hasan Khan](https://github.com/biplobhasankhan) (Front-End Developer)
-- [Jannatul Bushra Snigdha](https://github.com/) (Researcher, Designer)
+- [Jannatul Bushra Snigdha](https://github.com/jannat-b) (Researcher, Designer)
 - [Sharmin Sultana Lincoln](https://github.com/sharminlincoln) (Data Specialist & Analyst)
 - [Abdus Sobhan](https://github.com/sobhanlab) (Co-Researcher)
 

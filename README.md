@@ -1,6 +1,6 @@
 # NeoOrrery
 
-**Live Demo: [NeoOrrery](https://neoorrery-13c972087676.herokuapp.com)**
+**Live Demo:** https://neoorrery-13c972087676.herokuapp.com
 
 Demo Login Information:
 
